@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard del Equipo - Balance de Tareas</title>
+    <title>Dashboard del Equipo - Reporte 2025</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
@@ -24,6 +24,8 @@
             --accent-orange: #f59e0b;
             --accent-purple: #8b5cf6;
             --accent-indigo: #6366f1;
+            --accent-red: #ef4444;
+            --accent-cyan: #06b6d4;
             --border: #475569;
         }
 
@@ -37,7 +39,7 @@
 
         .gradient-bar {
             height: 4px;
-            background: linear-gradient(90deg, #6366f1 0%, #22c55e 50%, #f59e0b 100%);
+            background: linear-gradient(90deg, #6366f1 0%, #22c55e 33%, #f59e0b 66%, #06b6d4 100%);
             position: fixed;
             top: 0;
             left: 0;
@@ -76,9 +78,24 @@
             font-size: 1.1rem;
         }
 
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--accent-indigo);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .icon {
+            font-size: 1.5rem;
+        }
+
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 16px;
             margin-bottom: 32px;
         }
@@ -89,7 +106,26 @@
             padding: 20px;
             text-align: center;
             transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
         }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .kpi-card.green::before { background: var(--accent-green); }
+        .kpi-card.blue::before { background: var(--accent-blue); }
+        .kpi-card.orange::before { background: var(--accent-orange); }
+        .kpi-card.purple::before { background: var(--accent-purple); }
+        .kpi-card.indigo::before { background: var(--accent-indigo); }
+        .kpi-card.cyan::before { background: var(--accent-cyan); }
+        .kpi-card.red::before { background: var(--accent-red); }
 
         .kpi-card:hover {
             transform: translateY(-2px);
@@ -97,7 +133,7 @@
         }
 
         .kpi-card .value {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 700;
             margin-bottom: 4px;
         }
@@ -109,11 +145,82 @@
             text-transform: uppercase;
         }
 
+        .kpi-card .sublabel {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
         .kpi-card.green .value { color: var(--accent-green); }
         .kpi-card.blue .value { color: var(--accent-blue); }
         .kpi-card.orange .value { color: var(--accent-orange); }
         .kpi-card.purple .value { color: var(--accent-purple); }
         .kpi-card.indigo .value { color: var(--accent-indigo); }
+        .kpi-card.cyan .value { color: var(--accent-cyan); }
+        .kpi-card.red .value { color: var(--accent-red); }
+
+        .metrics-section {
+            margin-bottom: 40px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: transform 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateX(4px);
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .metric-icon.green { background: rgba(34, 197, 94, 0.2); }
+        .metric-icon.blue { background: rgba(59, 130, 246, 0.2); }
+        .metric-icon.orange { background: rgba(245, 158, 11, 0.2); }
+        .metric-icon.purple { background: rgba(139, 92, 246, 0.2); }
+        .metric-icon.cyan { background: rgba(6, 182, 212, 0.2); }
+        .metric-icon.red { background: rgba(239, 68, 68, 0.2); }
+
+        .metric-content {
+            flex: 1;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .metric-sublabel {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
 
         .dashboard-grid {
             display: grid;
@@ -154,158 +261,61 @@
 
         .chart-container {
             position: relative;
-            height: 300px;
+            height: 280px;
         }
 
-        .filter-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            background: var(--bg-card);
-            border: none;
-            color: var(--text-secondary);
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .filter-btn:hover {
-            background: var(--border);
-        }
-
-        .filter-btn.active {
-            background: var(--accent-indigo);
-            color: white;
-        }
-
-        .tasks-section {
+        .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
+            gap: 20px;
             margin-bottom: 32px;
         }
 
-        .task-column {
+        .project-card {
             background: var(--bg-secondary);
             border-radius: 12px;
-            padding: 20px;
-        }
-
-        .task-column-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .task-column-header .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        .task-column-header .dot.progress { background: var(--accent-indigo); }
-        .task-column-header .dot.todo { background: var(--accent-orange); }
-        .task-column-header .dot.done { background: var(--accent-green); }
-
-        .task-column-header h3 {
-            font-size: 13px;
-            font-weight: 600;
-            flex: 1;
-        }
-
-        .task-column-header .count {
-            background: var(--bg-card);
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .task-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .task-item {
-            background: var(--bg-card);
-            border-radius: 8px;
-            padding: 12px;
-            border-left: 3px solid var(--border);
+            padding: 24px;
+            border-left: 4px solid var(--border);
             transition: transform 0.2s;
         }
 
-        .task-item:hover {
-            transform: translateX(4px);
+        .project-card:hover {
+            transform: translateY(-2px);
         }
 
-        .task-item.abaco { border-left-color: var(--accent-blue); }
-        .task-item.mapasco { border-left-color: var(--accent-green); }
-        .task-item.prisma { border-left-color: var(--accent-orange); }
-        .task-item.otros { border-left-color: var(--accent-purple); }
+        .project-card.landing { border-left-color: var(--accent-green); }
+        .project-card.mapasco { border-left-color: var(--accent-cyan); }
+        .project-card.abaco { border-left-color: var(--accent-blue); }
+        .project-card.prisma { border-left-color: var(--accent-orange); }
 
-        .task-item .project {
-            font-size: 10px;
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .project-name {
+            font-size: 1.1rem;
             font-weight: 600;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
         }
 
-        .task-item.abaco .project { color: var(--accent-blue); }
-        .task-item.mapasco .project { color: var(--accent-green); }
-        .task-item.prisma .project { color: var(--accent-orange); }
-        .task-item.otros .project { color: var(--accent-purple); }
-
-        .task-item .name {
-            font-size: 13px;
-            color: var(--text-primary);
+        .project-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
         }
 
-        .legend {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            flex-wrap: wrap;
-            margin-top: 16px;
+        .badge-complete { background: rgba(34, 197, 94, 0.2); color: var(--accent-green); }
+        .badge-progress { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
+        .badge-pending { background: rgba(245, 158, 11, 0.2); color: var(--accent-orange); }
+
+        .project-progress {
+            margin-bottom: 16px;
         }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .legend-item .color {
-            width: 12px;
-            height: 12px;
-            border-radius: 3px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 24px;
-            color: var(--text-muted);
-            font-size: 12px;
-            border-top: 1px solid var(--border);
-        }
-
-        .progress-bar-container {
-            margin-top: 20px;
-        }
-
-        .progress-label {
+        .progress-header {
             display: flex;
             justify-content: space-between;
             font-size: 12px;
@@ -319,36 +329,82 @@
             overflow: hidden;
         }
 
-        .progress-bar .fill {
+        .progress-fill {
             height: 100%;
             border-radius: 4px;
             transition: width 0.5s ease;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 20px;
+        .progress-fill.green { background: linear-gradient(90deg, #22c55e, #16a34a); }
+        .progress-fill.blue { background: linear-gradient(90deg, #3b82f6, #2563eb); }
+        .progress-fill.cyan { background: linear-gradient(90deg, #06b6d4, #0891b2); }
+        .progress-fill.orange { background: linear-gradient(90deg, #f59e0b, #d97706); }
+
+        .project-details {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
         }
 
-        .stat-item {
-            background: var(--bg-card);
-            border-radius: 8px;
-            padding: 12px;
+        .project-details ul {
+            list-style: none;
+            margin-top: 8px;
+        }
+
+        .project-details li {
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .project-details li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--text-muted);
+        }
+
+        .quality-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .quality-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
             text-align: center;
         }
 
-        .stat-item .value {
-            font-size: 1.5rem;
-            font-weight: 700;
+        .quality-card .icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
         }
 
-        .stat-item .label {
+        .quality-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .quality-card .label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .quality-card .sublabel {
             font-size: 10px;
             color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 12px;
+            border-top: 1px solid var(--border);
         }
 
         .animate-in {
@@ -367,10 +423,22 @@
             }
         }
 
-        .card:nth-child(1) { animation-delay: 0.1s; }
-        .card:nth-child(2) { animation-delay: 0.2s; }
-        .card:nth-child(3) { animation-delay: 0.3s; }
-        .card:nth-child(4) { animation-delay: 0.4s; }
+        .highlight {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            margin-left: 8px;
+        }
+
+        .tag.success { background: rgba(34, 197, 94, 0.2); color: var(--accent-green); }
+        .tag.warning { background: rgba(245, 158, 11, 0.2); color: var(--accent-orange); }
+        .tag.info { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
 
         ::-webkit-scrollbar {
             width: 6px;
@@ -389,6 +457,20 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--text-muted);
         }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .kpi-card .value {
+                font-size: 1.8rem;
+            }
+            
+            .container {
+                padding: 16px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -397,136 +479,301 @@
     <div class="container">
         <header>
             <div class="label">Reporte de Productividad</div>
-            <h1>Dashboard del Equipo</h1>
-            <p class="subtitle">Balance de Tareas - Diciembre 2025</p>
+            <h1>Dashboard del Equipo 2025</h1>
+            <p class="subtitle">Métricas de Entrega, Calidad y Avance de Proyectos</p>
         </header>
 
+        <!-- KPIs Principales -->
         <div class="kpi-grid">
             <div class="kpi-card green animate-in">
-                <div class="value">116</div>
-                <div class="label">Tareas Totales</div>
+                <div class="value">96</div>
+                <div class="label">Funcionalidades</div>
+                <div class="sublabel">Entregadas</div>
             </div>
             <div class="kpi-card indigo animate-in">
-                <div class="value">4</div>
-                <div class="label">Proyectos Activos</div>
+                <div class="value">90%</div>
+                <div class="label">Velocidad</div>
+                <div class="sublabel">Story Points/Sprint</div>
+            </div>
+            <div class="kpi-card cyan animate-in">
+                <div class="value">5 días</div>
+                <div class="label">Lead Time</div>
+                <div class="sublabel">Solicitud → Producción</div>
             </div>
             <div class="kpi-card orange animate-in">
-                <div class="value">83%</div>
-                <div class="label">Completado</div>
-            </div>
-            <div class="kpi-card blue animate-in">
-                <div class="value">18</div>
-                <div class="label">Velocidad/Sprint</div>
+                <div class="value">4/mes</div>
+                <div class="label">Despliegues</div>
+                <div class="sublabel">Frecuencia semanal</div>
             </div>
             <div class="kpi-card purple animate-in">
-                <div class="value">94%</div>
-                <div class="label">Eficiencia</div>
+                <div class="value">90%</div>
+                <div class="label">Cumplimiento</div>
+                <div class="sublabel">Compromisos Sprint</div>
+            </div>
+            <div class="kpi-card blue animate-in">
+                <div class="value">95%</div>
+                <div class="label">Bugs Resueltos</div>
+                <div class="sublabel">19 de 20</div>
             </div>
         </div>
 
+        <!-- Métricas de Calidad -->
+        <div class="metrics-section">
+            <h2 class="section-title"><span class="icon">🛡️</span> Métricas de Calidad</h2>
+            <div class="quality-grid">
+                <div class="quality-card animate-in">
+                    <div class="icon">🐛</div>
+                    <div class="value" style="color: var(--accent-orange)">20</div>
+                    <div class="label">Bugs en Producción</div>
+                    <div class="sublabel">Detectados total</div>
+                </div>
+                <div class="quality-card animate-in">
+                    <div class="icon">✅</div>
+                    <div class="value" style="color: var(--accent-green)">19/20</div>
+                    <div class="label">Tasa de Resolución</div>
+                    <div class="sublabel">95% resueltos</div>
+                </div>
+                <div class="quality-card animate-in">
+                    <div class="icon">⚡</div>
+                    <div class="value" style="color: var(--accent-cyan)">5h</div>
+                    <div class="label">MTTR</div>
+                    <div class="sublabel">Tiempo resolución críticos</div>
+                </div>
+                <div class="quality-card animate-in">
+                    <div class="icon">🔧</div>
+                    <div class="value" style="color: var(--accent-purple)">25%</div>
+                    <div class="label">Deuda Técnica</div>
+                    <div class="sublabel">Refactoring vs Features</div>
+                </div>
+                <div class="quality-card animate-in">
+                    <div class="icon">🔄</div>
+                    <div class="value" style="color: var(--accent-red)">3</div>
+                    <div class="label">Regresiones</div>
+                    <div class="sublabel">Bugs reintroducidos (ABACO)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficas -->
         <div class="dashboard-grid">
             <div class="card animate-in">
                 <div class="card-header">
                     <div>
-                        <div class="card-title">Estado de Tareas</div>
-                        <div class="card-subtitle">Distribución por columna Kanban</div>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="statusChart"></canvas>
-                </div>
-            </div>
-
-            <div class="card animate-in">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">Distribución por Proyecto</div>
-                        <div class="card-subtitle">Porcentaje de tareas asignadas</div>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="projectChart"></canvas>
-                </div>
-            </div>
-
-            <div class="card animate-in">
-                <div class="card-header">
-                    <div>
                         <div class="card-title">Avance por Proyecto</div>
-                        <div class="card-subtitle">Completadas vs Pendientes</div>
-                    </div>
-                    <div class="filter-buttons">
-                        <button class="filter-btn active" onclick="filterChart('all')">Todos</button>
-                        <button class="filter-btn" onclick="filterChart('completed')">Completadas</button>
-                        <button class="filter-btn" onclick="filterChart('pending')">Pendientes</button>
+                        <div class="card-subtitle">Porcentaje de completado</div>
                     </div>
                 </div>
                 <div class="chart-container">
-                    <canvas id="progressChart"></canvas>
+                    <canvas id="projectProgressChart"></canvas>
                 </div>
             </div>
 
             <div class="card animate-in">
                 <div class="card-header">
                     <div>
-                        <div class="card-title">Tendencia de Productividad</div>
-                        <div class="card-subtitle">Tareas completadas por sprint</div>
+                        <div class="card-title">Distribución de Esfuerzo</div>
+                        <div class="card-subtitle">Tiempo dedicado por proyecto</div>
                     </div>
                 </div>
                 <div class="chart-container">
-                    <canvas id="trendChart"></canvas>
+                    <canvas id="effortChart"></canvas>
                 </div>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="value" style="color: var(--accent-green)">16</div>
-                        <div class="label">Promedio/Sprint</div>
+            </div>
+
+            <div class="card animate-in">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Métricas de Calidad</div>
+                        <div class="card-subtitle">Bugs detectados vs resueltos</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="value" style="color: var(--accent-indigo)">↑12%</div>
-                        <div class="label">vs Anterior</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="qualityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card animate-in">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Indicadores de Productividad</div>
+                        <div class="card-subtitle">Comparativa vs objetivo</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="productivityChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Avance de Proyectos -->
+        <div class="metrics-section">
+            <h2 class="section-title"><span class="icon">📊</span> Avance de Proyectos</h2>
+            <div class="projects-grid">
+                <!-- Landing Page -->
+                <div class="project-card landing animate-in">
+                    <div class="project-header">
+                        <div class="project-name">🌐 Landing Page</div>
+                        <span class="project-badge badge-complete">COMPLETADO</span>
+                    </div>
+                    <div class="project-progress">
+                        <div class="progress-header">
+                            <span>Progreso</span>
+                            <span style="color: var(--accent-green); font-weight: 600;">100%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill green" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="project-details">
+                        <ul>
+                            <li>Entregado a satisfacción</li>
+                            <li>En producción</li>
+                            <li>Lista de tareas 100% completada</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Mapas CO -->
+                <div class="project-card mapasco animate-in">
+                    <div class="project-header">
+                        <div class="project-name">🗺️ Mapas CO</div>
+                        <span class="project-badge badge-progress">FASE 2 → 3</span>
+                    </div>
+                    <div class="project-progress">
+                        <div class="progress-header">
+                            <span>Fase 2</span>
+                            <span style="color: var(--accent-cyan); font-weight: 600;">100%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill cyan" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="project-progress" style="margin-top: 12px;">
+                        <div class="progress-header">
+                            <span>Fase 3</span>
+                            <span style="color: var(--accent-orange); font-weight: 600;">20%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill orange" style="width: 20%;"></div>
+                        </div>
+                    </div>
+                    <div class="project-details">
+                        <ul>
+                            <li>Fecha entrega: <strong>18 Diciembre</strong></li>
+                            <li>Pendiente despliegue por testing</li>
+                            <li>100% tareas Fase 2 completadas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- ABACO -->
+                <div class="project-card abaco animate-in">
+                    <div class="project-header">
+                        <div class="project-name">🌳 ABACO</div>
+                        <span class="project-badge badge-progress">EN PROGRESO</span>
+                    </div>
+                    <div class="project-progress">
+                        <div class="progress-header">
+                            <span>Versión Deforestación</span>
+                            <span style="color: var(--accent-blue); font-weight: 600;">90%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill blue" style="width: 90%;"></div>
+                        </div>
+                    </div>
+                    <div class="project-details">
+                        <ul>
+                            <li>Trabajando en Issues #35, #36, #37</li>
+                            <li>100% de Issues resueltos con éxito</li>
+                            <li>3 regresiones identificadas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- PRISMA -->
+                <div class="project-card prisma animate-in">
+                    <div class="project-header">
+                        <div class="project-name">⚙️ PRISMA</div>
+                        <span class="project-badge badge-complete">ENTREGADO</span>
+                    </div>
+                    <div class="project-progress">
+                        <div class="progress-header">
+                            <span>Entrega Principal</span>
+                            <span style="color: var(--accent-green); font-weight: 600;">100%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill green" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="project-details">
+                        <ul>
+                            <li>Entregado a satisfacción del cliente</li>
+                            <li>Correo de confirmación recibido</li>
+                            <li>Integrando EndPoints Sentinel Hub</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="tasks-section">
-            <div class="task-column animate-in">
-                <div class="task-column-header">
-                    <div class="dot progress"></div>
-                    <h3>En Progreso</h3>
-                    <span class="count">7</span>
+        <!-- Resumen de Entrega -->
+        <div class="metrics-section">
+            <h2 class="section-title"><span class="icon">🚀</span> Resumen de Entrega y Productividad</h2>
+            <div class="metrics-grid">
+                <div class="metric-card animate-in">
+                    <div class="metric-icon green">📦</div>
+                    <div class="metric-content">
+                        <div class="metric-value">96</div>
+                        <div class="metric-label">Funcionalidades Entregadas</div>
+                        <div class="metric-sublabel">Total acumulado</div>
+                    </div>
                 </div>
-                <div class="task-list" id="inProgressTasks">
-                    <!-- Tasks will be inserted by JS -->
+                <div class="metric-card animate-in">
+                    <div class="metric-icon blue">📈</div>
+                    <div class="metric-content">
+                        <div class="metric-value">90%</div>
+                        <div class="metric-label">Velocidad del Equipo</div>
+                        <div class="metric-sublabel">Story points completados/sprint</div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="task-column animate-in">
-                <div class="task-column-header">
-                    <div class="dot todo"></div>
-                    <h3>Por Hacer</h3>
-                    <span class="count">7</span>
+                <div class="metric-card animate-in">
+                    <div class="metric-icon cyan">⏱️</div>
+                    <div class="metric-content">
+                        <div class="metric-value">5 días</div>
+                        <div class="metric-label">Lead Time Promedio</div>
+                        <div class="metric-sublabel">Solicitud → Producción</div>
+                    </div>
                 </div>
-                <div class="task-list" id="todoTasks">
-                    <!-- Tasks will be inserted by JS -->
+                <div class="metric-card animate-in">
+                    <div class="metric-icon purple">🚀</div>
+                    <div class="metric-content">
+                        <div class="metric-value">4/mes</div>
+                        <div class="metric-label">Frecuencia de Despliegues</div>
+                        <div class="metric-sublabel">Releases semanales</div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="task-column animate-in">
-                <div class="task-column-header">
-                    <div class="dot done"></div>
-                    <h3>Completadas Recientes</h3>
-                    <span class="count">96</span>
+                <div class="metric-card animate-in">
+                    <div class="metric-icon orange">🎯</div>
+                    <div class="metric-content">
+                        <div class="metric-value">90%</div>
+                        <div class="metric-label">Cumplimiento de Sprints</div>
+                        <div class="metric-sublabel">Compromisos cumplidos</div>
+                    </div>
                 </div>
-                <div class="task-list" id="doneTasks">
-                    <!-- Tasks will be inserted by JS -->
+                <div class="metric-card animate-in">
+                    <div class="metric-icon green">⚡</div>
+                    <div class="metric-content">
+                        <div class="metric-value">5h</div>
+                        <div class="metric-label">MTTR</div>
+                        <div class="metric-sublabel">Resolución bugs críticos</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <footer>
-        <p>Dashboard del Equipo de Desarrollo · Actualizado Diciembre 2024</p>
+        <p>Dashboard del Equipo de Desarrollo · Reporte 2025</p>
     </footer>
 
     <script>
@@ -537,23 +784,25 @@
             orange: '#f59e0b',
             purple: '#8b5cf6',
             indigo: '#6366f1',
-            gray: '#64748b',
-            bgCard: '#334155'
+            cyan: '#06b6d4',
+            red: '#ef4444',
+            gray: '#64748b'
         };
 
         // Chart.js global defaults
         Chart.defaults.color = '#94a3b8';
         Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
 
-        // Status Chart (Horizontal Bar)
-        const statusCtx = document.getElementById('statusChart').getContext('2d');
-        const statusChart = new Chart(statusCtx, {
+        // Project Progress Chart (Horizontal Bar)
+        const projectProgressCtx = document.getElementById('projectProgressChart').getContext('2d');
+        new Chart(projectProgressCtx, {
             type: 'bar',
             data: {
-                labels: ['Completado', 'En Progreso', 'Por Hacer', 'Sin Estado'],
+                labels: ['Landing Page', 'Mapas CO (F2)', 'Mapas CO (F3)', 'ABACO', 'PRISMA'],
                 datasets: [{
-                    data: [96, 7, 7, 6],
-                    backgroundColor: [colors.green, colors.indigo, colors.orange, colors.gray],
+                    label: 'Progreso',
+                    data: [100, 100, 20, 90, 100],
+                    backgroundColor: [colors.green, colors.cyan, colors.orange, colors.blue, colors.green],
                     borderRadius: 6,
                     borderSkipped: false
                 }]
@@ -566,16 +815,21 @@
                     legend: { display: false },
                     tooltip: {
                         backgroundColor: '#1e293b',
-                        titleColor: '#f1f5f9',
-                        bodyColor: '#94a3b8',
                         padding: 12,
-                        cornerRadius: 8
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: (context) => `${context.raw}% completado`
+                        }
                     }
                 },
                 scales: {
                     x: {
+                        max: 100,
                         grid: { color: '#334155', drawBorder: false },
-                        ticks: { padding: 8 }
+                        ticks: { 
+                            padding: 8,
+                            callback: (value) => value + '%'
+                        }
                     },
                     y: {
                         grid: { display: false },
@@ -585,15 +839,15 @@
             }
         });
 
-        // Project Distribution Chart (Doughnut)
-        const projectCtx = document.getElementById('projectChart').getContext('2d');
-        const projectChart = new Chart(projectCtx, {
+        // Effort Distribution Chart (Doughnut)
+        const effortCtx = document.getElementById('effortChart').getContext('2d');
+        new Chart(effortCtx, {
             type: 'doughnut',
             data: {
-                labels: ['ABACO', 'MAPAS CO', 'PRISMA', 'OTROS'],
+                labels: ['ABACO', 'Mapas CO', 'PRISMA', 'Landing Page'],
                 datasets: [{
-                    data: [35, 32, 38, 11],
-                    backgroundColor: [colors.blue, colors.green, colors.orange, colors.purple],
+                    data: [35, 30, 25, 10],
+                    backgroundColor: [colors.blue, colors.cyan, colors.orange, colors.green],
                     borderWidth: 0,
                     hoverOffset: 8
                 }]
@@ -606,7 +860,7 @@
                     legend: {
                         position: 'bottom',
                         labels: {
-                            padding: 20,
+                            padding: 16,
                             usePointStyle: true,
                             pointStyle: 'rectRounded'
                         }
@@ -616,56 +870,32 @@
                         padding: 12,
                         cornerRadius: 8,
                         callbacks: {
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = Math.round((context.raw / total) * 100);
-                                return `${context.label}: ${context.raw} tareas (${percentage}%)`;
-                            }
+                            label: (context) => `${context.label}: ${context.raw}% del esfuerzo`
                         }
                     }
                 }
             }
         });
 
-        // Progress by Project Chart (Stacked Bar)
-        const progressCtx = document.getElementById('progressChart').getContext('2d');
-        let progressChart = new Chart(progressCtx, {
+        // Quality Chart (Bar)
+        const qualityCtx = document.getElementById('qualityChart').getContext('2d');
+        new Chart(qualityCtx, {
             type: 'bar',
             data: {
-                labels: ['ABACO', 'MAPAS CO', 'PRISMA', 'OTROS'],
-                datasets: [
-                    {
-                        label: 'Completadas',
-                        data: [28, 26, 32, 10],
-                        backgroundColor: colors.green,
-                        borderRadius: 4
-                    },
-                    {
-                        label: 'En Progreso',
-                        data: [3, 3, 1, 0],
-                        backgroundColor: colors.indigo,
-                        borderRadius: 4
-                    },
-                    {
-                        label: 'Pendientes',
-                        data: [4, 3, 5, 1],
-                        backgroundColor: colors.orange,
-                        borderRadius: 4
-                    }
-                ]
+                labels: ['Bugs Detectados', 'Bugs Resueltos', 'Regresiones'],
+                datasets: [{
+                    data: [20, 19, 3],
+                    backgroundColor: [colors.orange, colors.green, colors.red],
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    barThickness: 60
+                }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            usePointStyle: true,
-                            pointStyle: 'rectRounded'
-                        }
-                    },
+                    legend: { display: false },
                     tooltip: {
                         backgroundColor: '#1e293b',
                         padding: 12,
@@ -680,41 +910,37 @@
                     y: {
                         grid: { color: '#334155', drawBorder: false },
                         ticks: { padding: 8 },
-                        stacked: false
+                        beginAtZero: true
                     }
                 }
             }
         });
 
-        // Trend Chart (Line)
-        const trendCtx = document.getElementById('trendChart').getContext('2d');
-        const trendChart = new Chart(trendCtx, {
-            type: 'line',
+        // Productivity Radar Chart
+        const productivityCtx = document.getElementById('productivityChart').getContext('2d');
+        new Chart(productivityCtx, {
+            type: 'radar',
             data: {
-                labels: ['Sprint 1', 'Sprint 2', 'Sprint 3', 'Sprint 4', 'Sprint 5', 'Sprint 6'],
+                labels: ['Velocidad', 'Cumplimiento', 'Calidad', 'Lead Time', 'Despliegues'],
                 datasets: [
                     {
-                        label: 'Tareas Completadas',
-                        data: [12, 14, 15, 16, 17, 18],
+                        label: 'Actual',
+                        data: [90, 90, 95, 85, 80],
+                        backgroundColor: colors.green + '30',
                         borderColor: colors.green,
-                        backgroundColor: colors.green + '20',
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
+                        borderWidth: 2,
                         pointBackgroundColor: colors.green,
-                        pointBorderColor: '#1e293b',
-                        pointBorderWidth: 2
+                        pointRadius: 4
                     },
                     {
-                        label: 'Meta',
-                        data: [15, 15, 15, 15, 15, 15],
+                        label: 'Objetivo',
+                        data: [85, 85, 90, 80, 75],
+                        backgroundColor: colors.indigo + '20',
                         borderColor: colors.indigo,
+                        borderWidth: 2,
                         borderDash: [5, 5],
-                        fill: false,
-                        tension: 0,
-                        pointRadius: 4,
-                        pointBackgroundColor: colors.indigo
+                        pointBackgroundColor: colors.indigo,
+                        pointRadius: 4
                     }
                 ]
             },
@@ -725,138 +951,41 @@
                     legend: {
                         position: 'bottom',
                         labels: {
-                            padding: 20,
+                            padding: 16,
                             usePointStyle: true
                         }
                     },
                     tooltip: {
                         backgroundColor: '#1e293b',
                         padding: 12,
-                        cornerRadius: 8,
-                        mode: 'index',
-                        intersect: false
+                        cornerRadius: 8
                     }
                 },
                 scales: {
-                    x: {
-                        grid: { display: false },
-                        ticks: { padding: 8 }
-                    },
-                    y: {
-                        grid: { color: '#334155', drawBorder: false },
-                        ticks: { padding: 8 },
-                        min: 0,
-                        max: 25
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            stepSize: 20,
+                            backdropColor: 'transparent'
+                        },
+                        grid: {
+                            color: '#334155'
+                        },
+                        angleLines: {
+                            color: '#334155'
+                        },
+                        pointLabels: {
+                            font: { size: 11 }
+                        }
                     }
-                },
-                interaction: {
-                    mode: 'nearest',
-                    axis: 'x',
-                    intersect: false
                 }
             }
         });
 
-        // Filter function for progress chart
-        function filterChart(filter) {
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            const allData = {
-                completed: [28, 26, 32, 10],
-                inProgress: [3, 3, 1, 0],
-                pending: [4, 3, 5, 1]
-            };
-
-            if (filter === 'all') {
-                progressChart.data.datasets[0].data = allData.completed;
-                progressChart.data.datasets[1].data = allData.inProgress;
-                progressChart.data.datasets[2].data = allData.pending;
-                progressChart.data.datasets.forEach(ds => ds.hidden = false);
-            } else if (filter === 'completed') {
-                progressChart.data.datasets[0].hidden = false;
-                progressChart.data.datasets[1].hidden = true;
-                progressChart.data.datasets[2].hidden = true;
-            } else if (filter === 'pending') {
-                progressChart.data.datasets[0].hidden = true;
-                progressChart.data.datasets[1].hidden = false;
-                progressChart.data.datasets[2].hidden = false;
-            }
-            progressChart.update();
-        }
-
-        // Task data
-        const tasks = {
-            inProgress: [
-                { project: 'ABACO', name: 'Layer-Input', class: 'abaco' },
-                { project: 'ABACO', name: 'how-to-action', class: 'abaco' },
-                { project: 'MAPAS CO', name: 'Shopping-cart-quotes', class: 'mapasco' },
-                { project: 'MAPAS CO', name: 'salesforce-api-connect', class: 'mapasco' },
-                { project: 'PRISMA', name: 'clases SSPP', class: 'prisma' },
-                { project: 'ABACO', name: 'Cleaning-action', class: 'abaco' },
-                { project: 'MAPAS CO', name: 'Last-Tasks-II', class: 'mapasco' }
-            ],
-            todo: [
-                { project: 'ABACO', name: 'Add-Map', class: 'abaco' },
-                { project: 'ABACO', name: 'Sentinel-Images', class: 'abaco' },
-                { project: 'MAPAS CO', name: 'Reset-Password', class: 'mapasco' },
-                { project: 'PRISMA', name: 'Refactorizar-Wmts-Function', class: 'prisma' },
-                { project: 'PRISMA', name: 'code-cleaning', class: 'prisma' },
-                { project: 'PRISMA', name: 'ngrdi-refactoring', class: 'prisma' },
-                { project: 'LANDING', name: 'MetaEtiquetas', class: 'otros' }
-            ],
-            done: [
-                { project: 'MAPAS CO', name: 'Capella-review', class: 'mapasco' },
-                { project: 'PRISMA', name: 'Develop to main', class: 'prisma' },
-                { project: 'ABACO', name: 'Consola Insegura', class: 'abaco' },
-                { project: 'MAPAS CO', name: 'Historias-22-23-24', class: 'mapasco' },
-                { project: 'PRISMA', name: 'GitHub Branch', class: 'prisma' },
-                { project: 'PRISMA', name: 'admin-module-setup', class: 'prisma' },
-                { project: 'PRISMA', name: 'results-enterprise-cleanup', class: 'prisma' },
-                { project: 'LANDING', name: 'seccion-home', class: 'otros' },
-                { project: 'ABACO', name: 'Link del portal en los correos', class: 'abaco' }
-            ]
-        };
-
-        // Render tasks
-        function renderTasks() {
-            const inProgressContainer = document.getElementById('inProgressTasks');
-            const todoContainer = document.getElementById('todoTasks');
-            const doneContainer = document.getElementById('doneTasks');
-
-            tasks.inProgress.forEach(task => {
-                inProgressContainer.innerHTML += `
-                    <div class="task-item ${task.class}">
-                        <div class="project">${task.project}</div>
-                        <div class="name">${task.name}</div>
-                    </div>
-                `;
-            });
-
-            tasks.todo.forEach(task => {
-                todoContainer.innerHTML += `
-                    <div class="task-item ${task.class}">
-                        <div class="project">${task.project}</div>
-                        <div class="name">${task.name}</div>
-                    </div>
-                `;
-            });
-
-            tasks.done.forEach(task => {
-                doneContainer.innerHTML += `
-                    <div class="task-item ${task.class}">
-                        <div class="project">${task.project}</div>
-                        <div class="name">${task.name}</div>
-                    </div>
-                `;
-            });
-        }
-
-        renderTasks();
-
-        // Add animation delay to cards
+        // Animation delay for cards
         document.querySelectorAll('.animate-in').forEach((el, i) => {
-            el.style.animationDelay = `${i * 0.1}s`;
+            el.style.animationDelay = `${i * 0.05}s`;
         });
     </script>
 </body>
