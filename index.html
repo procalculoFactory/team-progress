@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard del Equipo - Balance de Tareas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-green: #22c55e;
+            --accent-orange: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --accent-indigo: #6366f1;
+            --border: #475569;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .gradient-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #6366f1 0%, #22c55e 50%, #f59e0b 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+            padding-top: 28px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        header .label {
+            font-size: 12px;
+            color: var(--accent-indigo);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        header .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .kpi-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .kpi-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .kpi-card .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .kpi-card.green .value { color: var(--accent-green); }
+        .kpi-card.blue .value { color: var(--accent-blue); }
+        .kpi-card.orange .value { color: var(--accent-orange); }
+        .kpi-card.purple .value { color: var(--accent-purple); }
+        .kpi-card.indigo .value { color: var(--accent-indigo); }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--bg-card);
+            border: none;
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: var(--border);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-indigo);
+            color: white;
+        }
+
+        .tasks-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .task-column {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .task-column-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .task-column-header .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .task-column-header .dot.progress { background: var(--accent-indigo); }
+        .task-column-header .dot.todo { background: var(--accent-orange); }
+        .task-column-header .dot.done { background: var(--accent-green); }
+
+        .task-column-header h3 {
+            font-size: 13px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .task-column-header .count {
+            background: var(--bg-card);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .task-item {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 3px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .task-item:hover {
+            transform: translateX(4px);
+        }
+
+        .task-item.abaco { border-left-color: var(--accent-blue); }
+        .task-item.mapasco { border-left-color: var(--accent-green); }
+        .task-item.prisma { border-left-color: var(--accent-orange); }
+        .task-item.otros { border-left-color: var(--accent-purple); }
+
+        .task-item .project {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .task-item.abaco .project { color: var(--accent-blue); }
+        .task-item.mapasco .project { color: var(--accent-green); }
+        .task-item.prisma .project { color: var(--accent-orange); }
+        .task-item.otros .project { color: var(--accent-purple); }
+
+        .task-item .name {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .legend-item .color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .progress-bar-container {
+            margin-top: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-card);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-item .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .stat-item .label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-card);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="gradient-bar"></div>
+    
+    <div class="container">
+        <header>
+            <div class="label">Reporte de Productividad</div>
+            <h1>Dashboard del Equipo</h1>
+            <p class="subtitle">Balance de Tareas - Diciembre 2024</p>
+        </header>
+
+        <div class="kpi-grid">
+            <div class="kpi-card green animate-in">
+                <div class="value">116</div>
+                <div class="label">Tareas Totales</div>
+            </div>
+            <div class="kpi-card indigo animate-in">
+                <div class="value">4</div>
+                <div class="label">Proyectos Activos</div>
+            </div>
+            <div class="kpi-card orange animate-in">
+                <div class="value">83%</div>
+                <div class="label">Completado</div>
+            </div>
+            <div class="kpi-card blue animate-in">
+                <div class="value">18</div>
+                <div class="label">Velocidad/Sprint</div>
+            </div>
+            <div class="kpi-card purple animate-in">
+                <div class="value">94%</div>
+                <div class="label">Eficiencia</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card animate-in">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Estado de Tareas</div>
+                        <div class="card-subtitle">Distribución por columna Kanban</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card animate-in">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Distribución por Proyecto</div>
+                        <div class="card-subtitle">Porcentaje de tareas asignadas</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="projectChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card animate-in">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Avance por Proyecto</div>
+                        <div class="card-subtitle">Completadas vs Pendientes</div>
+                    </div>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterChart('all')">Todos</button>
+                        <button class="filter-btn" onclick="filterChart('completed')">Completadas</button>
+                        <button class="filter-btn" onclick="filterChart('pending')">Pendientes</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card animate-in">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Tendencia de Productividad</div>
+                        <div class="card-subtitle">Tareas completadas por sprint</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="value" style="color: var(--accent-green)">16</div>
+                        <div class="label">Promedio/Sprint</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="value" style="color: var(--accent-indigo)">↑12%</div>
+                        <div class="label">vs Anterior</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tasks-section">
+            <div class="task-column animate-in">
+                <div class="task-column-header">
+                    <div class="dot progress"></div>
+                    <h3>En Progreso</h3>
+                    <span class="count">7</span>
+                </div>
+                <div class="task-list" id="inProgressTasks">
+                    <!-- Tasks will be inserted by JS -->
+                </div>
+            </div>
+
+            <div class="task-column animate-in">
+                <div class="task-column-header">
+                    <div class="dot todo"></div>
+                    <h3>Por Hacer</h3>
+                    <span class="count">7</span>
+                </div>
+                <div class="task-list" id="todoTasks">
+                    <!-- Tasks will be inserted by JS -->
+                </div>
+            </div>
+
+            <div class="task-column animate-in">
+                <div class="task-column-header">
+                    <div class="dot done"></div>
+                    <h3>Completadas Recientes</h3>
+                    <span class="count">96</span>
+                </div>
+                <div class="task-list" id="doneTasks">
+                    <!-- Tasks will be inserted by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Dashboard del Equipo de Desarrollo · Actualizado Diciembre 2024</p>
+    </footer>
+
+    <script>
+        // Color palette
+        const colors = {
+            blue: '#3b82f6',
+            green: '#22c55e',
+            orange: '#f59e0b',
+            purple: '#8b5cf6',
+            indigo: '#6366f1',
+            gray: '#64748b',
+            bgCard: '#334155'
+        };
+
+        // Chart.js global defaults
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+
+        // Status Chart (Horizontal Bar)
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        const statusChart = new Chart(statusCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Completado', 'En Progreso', 'Por Hacer', 'Sin Estado'],
+                datasets: [{
+                    data: [96, 7, 7, 6],
+                    backgroundColor: [colors.green, colors.indigo, colors.orange, colors.gray],
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleColor: '#f1f5f9',
+                        bodyColor: '#94a3b8',
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#334155', drawBorder: false },
+                        ticks: { padding: 8 }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { padding: 8 }
+                    }
+                }
+            }
+        });
+
+        // Project Distribution Chart (Doughnut)
+        const projectCtx = document.getElementById('projectChart').getContext('2d');
+        const projectChart = new Chart(projectCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['ABACO', 'MAPAS CO', 'PRISMA', 'OTROS'],
+                datasets: [{
+                    data: [35, 32, 38, 11],
+                    backgroundColor: [colors.blue, colors.green, colors.orange, colors.purple],
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'rectRounded'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((context.raw / total) * 100);
+                                return `${context.label}: ${context.raw} tareas (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Progress by Project Chart (Stacked Bar)
+        const progressCtx = document.getElementById('progressChart').getContext('2d');
+        let progressChart = new Chart(progressCtx, {
+            type: 'bar',
+            data: {
+                labels: ['ABACO', 'MAPAS CO', 'PRISMA', 'OTROS'],
+                datasets: [
+                    {
+                        label: 'Completadas',
+                        data: [28, 26, 32, 10],
+                        backgroundColor: colors.green,
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'En Progreso',
+                        data: [3, 3, 1, 0],
+                        backgroundColor: colors.indigo,
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Pendientes',
+                        data: [4, 3, 5, 1],
+                        backgroundColor: colors.orange,
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'rectRounded'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { padding: 8 }
+                    },
+                    y: {
+                        grid: { color: '#334155', drawBorder: false },
+                        ticks: { padding: 8 },
+                        stacked: false
+                    }
+                }
+            }
+        });
+
+        // Trend Chart (Line)
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        const trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Sprint 1', 'Sprint 2', 'Sprint 3', 'Sprint 4', 'Sprint 5', 'Sprint 6'],
+                datasets: [
+                    {
+                        label: 'Tareas Completadas',
+                        data: [12, 14, 15, 16, 17, 18],
+                        borderColor: colors.green,
+                        backgroundColor: colors.green + '20',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: colors.green,
+                        pointBorderColor: '#1e293b',
+                        pointBorderWidth: 2
+                    },
+                    {
+                        label: 'Meta',
+                        data: [15, 15, 15, 15, 15, 15],
+                        borderColor: colors.indigo,
+                        borderDash: [5, 5],
+                        fill: false,
+                        tension: 0,
+                        pointRadius: 4,
+                        pointBackgroundColor: colors.indigo
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 12,
+                        cornerRadius: 8,
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { padding: 8 }
+                    },
+                    y: {
+                        grid: { color: '#334155', drawBorder: false },
+                        ticks: { padding: 8 },
+                        min: 0,
+                        max: 25
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+
+        // Filter function for progress chart
+        function filterChart(filter) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const allData = {
+                completed: [28, 26, 32, 10],
+                inProgress: [3, 3, 1, 0],
+                pending: [4, 3, 5, 1]
+            };
+
+            if (filter === 'all') {
+                progressChart.data.datasets[0].data = allData.completed;
+                progressChart.data.datasets[1].data = allData.inProgress;
+                progressChart.data.datasets[2].data = allData.pending;
+                progressChart.data.datasets.forEach(ds => ds.hidden = false);
+            } else if (filter === 'completed') {
+                progressChart.data.datasets[0].hidden = false;
+                progressChart.data.datasets[1].hidden = true;
+                progressChart.data.datasets[2].hidden = true;
+            } else if (filter === 'pending') {
+                progressChart.data.datasets[0].hidden = true;
+                progressChart.data.datasets[1].hidden = false;
+                progressChart.data.datasets[2].hidden = false;
+            }
+            progressChart.update();
+        }
+
+        // Task data
+        const tasks = {
+            inProgress: [
+                { project: 'ABACO', name: 'Layer-Input', class: 'abaco' },
+                { project: 'ABACO', name: 'how-to-action', class: 'abaco' },
+                { project: 'MAPAS CO', name: 'Shopping-cart-quotes', class: 'mapasco' },
+                { project: 'MAPAS CO', name: 'salesforce-api-connect', class: 'mapasco' },
+                { project: 'PRISMA', name: 'clases SSPP', class: 'prisma' },
+                { project: 'ABACO', name: 'Cleaning-action', class: 'abaco' },
+                { project: 'MAPAS CO', name: 'Last-Tasks-II', class: 'mapasco' }
+            ],
+            todo: [
+                { project: 'ABACO', name: 'Add-Map', class: 'abaco' },
+                { project: 'ABACO', name: 'Sentinel-Images', class: 'abaco' },
+                { project: 'MAPAS CO', name: 'Reset-Password', class: 'mapasco' },
+                { project: 'PRISMA', name: 'Refactorizar-Wmts-Function', class: 'prisma' },
+                { project: 'PRISMA', name: 'code-cleaning', class: 'prisma' },
+                { project: 'PRISMA', name: 'ngrdi-refactoring', class: 'prisma' },
+                { project: 'LANDING', name: 'MetaEtiquetas', class: 'otros' }
+            ],
+            done: [
+                { project: 'MAPAS CO', name: 'Capella-review', class: 'mapasco' },
+                { project: 'PRISMA', name: 'Develop to main', class: 'prisma' },
+                { project: 'ABACO', name: 'Consola Insegura', class: 'abaco' },
+                { project: 'MAPAS CO', name: 'Historias-22-23-24', class: 'mapasco' },
+                { project: 'PRISMA', name: 'GitHub Branch', class: 'prisma' },
+                { project: 'PRISMA', name: 'admin-module-setup', class: 'prisma' },
+                { project: 'PRISMA', name: 'results-enterprise-cleanup', class: 'prisma' },
+                { project: 'LANDING', name: 'seccion-home', class: 'otros' },
+                { project: 'ABACO', name: 'Link del portal en los correos', class: 'abaco' }
+            ]
+        };
+
+        // Render tasks
+        function renderTasks() {
+            const inProgressContainer = document.getElementById('inProgressTasks');
+            const todoContainer = document.getElementById('todoTasks');
+            const doneContainer = document.getElementById('doneTasks');
+
+            tasks.inProgress.forEach(task => {
+                inProgressContainer.innerHTML += `
+                    <div class="task-item ${task.class}">
+                        <div class="project">${task.project}</div>
+                        <div class="name">${task.name}</div>
+                    </div>
+                `;
+            });
+
+            tasks.todo.forEach(task => {
+                todoContainer.innerHTML += `
+                    <div class="task-item ${task.class}">
+                        <div class="project">${task.project}</div>
+                        <div class="name">${task.name}</div>
+                    </div>
+                `;
+            });
+
+            tasks.done.forEach(task => {
+                doneContainer.innerHTML += `
+                    <div class="task-item ${task.class}">
+                        <div class="project">${task.project}</div>
+                        <div class="name">${task.name}</div>
+                    </div>
+                `;
+            });
+        }
+
+        renderTasks();
+
+        // Add animation delay to cards
+        document.querySelectorAll('.animate-in').forEach((el, i) => {
+            el.style.animationDelay = `${i * 0.1}s`;
+        });
+    </script>
+</body>
+</html>
