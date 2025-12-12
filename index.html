@@ -3,723 +3,1217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard del Equipo - Reporte 2025</title>
+    <title>FABRICA 2025</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-card: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --accent-blue: #3b82f6;
-            --accent-green: #22c55e;
-            --accent-orange: #f59e0b;
-            --accent-purple: #8b5cf6;
-            --accent-indigo: #6366f1;
-            --accent-red: #ef4444;
-            --accent-cyan: #06b6d4;
-            --accent-pink: #ec4899;
-            --border: #475569;
+            --gold: #ffd700;
+            --gold-dark: #b8860b;
+            --neon-blue: #00f0ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #00ff88;
+            --neon-orange: #ff6600;
+            --dark-bg: #0a0a1a;
+            --card-bg: #12122a;
+            --glass: rgba(255,255,255,0.05);
         }
+
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            color: white;
             min-height: 100vh;
-            line-height: 1.5;
+            overflow-x: hidden;
         }
-        .gradient-bar {
-            height: 4px;
-            background: linear-gradient(90deg, #6366f1 0%, #22c55e 33%, #f59e0b 66%, #06b6d4 100%);
+
+        /* Animated background */
+        .bg-animation {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            z-index: 100;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(0, 240, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(0, 255, 136, 0.05) 0%, transparent 70%),
+                var(--dark-bg);
         }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 24px;
-            padding-top: 28px;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-        header .label {
-            font-size: 12px;
-            color: var(--accent-indigo);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-        header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        header .subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
-        .section-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--accent-indigo);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-        .kpi-card {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-        .kpi-card::before {
+
+        .bg-animation::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            animation: bgMove 20s linear infinite;
         }
-        .kpi-card.green::before { background: var(--accent-green); }
-        .kpi-card.blue::before { background: var(--accent-blue); }
-        .kpi-card.orange::before { background: var(--accent-orange); }
-        .kpi-card.purple::before { background: var(--accent-purple); }
-        .kpi-card.indigo::before { background: var(--accent-indigo); }
-        .kpi-card.cyan::before { background: var(--accent-cyan); }
-        .kpi-card.red::before { background: var(--accent-red); }
-        .kpi-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+
+        @keyframes bgMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-60px); }
         }
-        .kpi-card .value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 4px;
+
+        .container {
+            max-width: 1500px;Ultimate Dev Squad
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
         }
-        .kpi-card .label {
-            font-size: 10px;
-            color: var(--text-muted);
-            letter-spacing: 1px;
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 30px 0 40px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .team-badge {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--dark-bg);
+            box-shadow: 
+                0 0 30px rgba(255,215,0,0.5),
+                0 0 60px rgba(255,215,0,0.3),
+                inset 0 2px 10px rgba(255,255,255,0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(255,215,0,0.5), 0 0 60px rgba(255,215,0,0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(255,215,0,0.7), 0 0 80px rgba(255,215,0,0.4); }
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold) 0%, #fff 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(255,215,0,0.3);
         }
-        .kpi-card .sublabel {
-            font-size: 10px;
-            color: var(--text-secondary);
-            margin-top: 4px;
+
+        .header .subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.2rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 8px;
         }
-        .kpi-card.green .value { color: var(--accent-green); }
-        .kpi-card.blue .value { color: var(--accent-blue); }
-        .kpi-card.orange .value { color: var(--accent-orange); }
-        .kpi-card.purple .value { color: var(--accent-purple); }
-        .kpi-card.indigo .value { color: var(--accent-indigo); }
-        .kpi-card.cyan .value { color: var(--accent-cyan); }
-        .kpi-card.red .value { color: var(--accent-red); }
-        .metrics-section { margin-bottom: 40px; }
-        .dashboard-grid {
+
+        /* Team Rating */
+        .team-rating {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .rating-box {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,215,0,0.05) 100%);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 15px;
+            padding: 20px 40px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .rating-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.2);
+        }
+
+        .rating-box .value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+
+        .rating-box .label {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin: 40px 0 25px;
+            padding-left: 20px;
+            border-left: 4px solid var(--neon-blue);
+            color: white;
+        }
+
+        .section-title span {
+            color: var(--neon-blue);
+        }
+
+        /* Player Cards Grid */
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        /* Player Card - FIFA Style */
+        .player-card {
+            position: relative;
+            height: 420px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .player-card:hover .card-inner {
+            transform: rotateY(10deg) rotateX(5deg);
+        }
+
+        .card-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            overflow: hidden;
+            background: linear-gradient(165deg, #1a1a3a 0%, #0d0d20 100%);
+            border: 2px solid;
+            box-shadow: 
+                0 10px 40px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .card-front.gold { border-color: var(--gold); }
+        .card-front.blue { border-color: var(--neon-blue); }
+        .card-front.pink { border-color: var(--neon-pink); }
+        .card-front.green { border-color: var(--neon-green); }
+
+        .card-front.gold::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(180deg, rgba(255,215,0,0.2) 0%, transparent 100%);
+        }
+
+        .card-front.blue::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(180deg, rgba(0,240,255,0.2) 0%, transparent 100%);
+        }
+
+        .card-front.pink::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(180deg, rgba(255,0,255,0.2) 0%, transparent 100%);
+        }
+
+        .card-front.green::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(180deg, rgba(0,255,136,0.2) 0%, transparent 100%);
+        }
+
+        .card-header {
+            display: flex;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-rating {
+            text-align: center;
+        }
+
+        .overall-rating {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .card-front.gold .overall-rating { color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,0.5); }
+        .card-front.blue .overall-rating { color: var(--neon-blue); text-shadow: 0 0 20px rgba(0,240,255,0.5); }
+        .card-front.pink .overall-rating { color: var(--neon-pink); text-shadow: 0 0 20px rgba(255,0,255,0.5); }
+        .card-front.green .overall-rating { color: var(--neon-green); text-shadow: 0 0 20px rgba(0,255,136,0.5); }
+
+        .position {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: rgba(255,255,255,0.8);
+            margin-top: 5px;
+        }
+
+        .card-avatar {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2a2a4a 0%, #1a1a3a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border: 3px solid rgba(255,255,255,0.2);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .player-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-align: center;
+            text-transform: uppercase;
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+        }
+
+        .player-role {
+            text-align: center;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            padding: 5px;
+        }
+
+        .card-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-            margin-bottom: 32px;
+            gap: 8px;
+            padding: 15px 20px;
         }
-        .dashboard-grid.three-cols {
-            grid-template-columns: repeat(3, 1fr);
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        @media (max-width: 1200px) {
-            .dashboard-grid.three-cols { grid-template-columns: repeat(2, 1fr); }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            min-width: 35px;
         }
-        @media (max-width: 1024px) {
-            .dashboard-grid, .dashboard-grid.three-cols { grid-template-columns: 1fr; }
+
+        .stat-item.high .stat-value { color: var(--neon-green); }
+        .stat-item.mid .stat-value { color: var(--gold); }
+        .stat-item.low .stat-value { color: var(--neon-orange); }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .card {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 24px;
+
+        .card-footer {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
         }
-        .card.wide { grid-column: span 2; }
-        @media (max-width: 1024px) { .card.wide { grid-column: span 1; } }
-        .card-header {
+
+        .footer-stat {
+            text-align: center;
+            padding: 5px 15px;
+        }
+
+        .footer-stat .value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .footer-stat .label {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+        }
+
+        /* Match Stats Section */
+        .match-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(18,18,42,0.8) 100%);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-card-title .icon {
+            font-size: 1.5rem;
+        }
+
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+
+        /* Project Cards - Game Style */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .project-card-game {
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(18,18,42,0.9) 100%);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .project-card-game:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .project-card-game::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .project-card-game.complete::before { background: linear-gradient(90deg, var(--neon-green), #00cc6a); }
+        .project-card-game.progress::before { background: linear-gradient(90deg, var(--neon-blue), #0088ff); }
+        .project-card-game.pending::before { background: linear-gradient(90deg, var(--neon-orange), #ff9900); }
+
+        .project-header-game {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
-        .card-title { font-size: 1.1rem; font-weight: 600; }
-        .card-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-        .chart-container { position: relative; height: 300px; }
-        .chart-container.tall { height: 350px; }
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 32px;
+
+        .project-name-game {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
         }
-        .project-card {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 20px;
-            border-left: 4px solid var(--border);
-            transition: transform 0.2s;
-        }
-        .project-card:hover { transform: translateY(-2px); }
-        .project-card.landing { border-left-color: var(--accent-green); }
-        .project-card.mapasco { border-left-color: var(--accent-cyan); }
-        .project-card.abaco { border-left-color: var(--accent-blue); }
-        .project-card.prisma { border-left-color: var(--accent-orange); }
-        .project-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-        }
-        .project-name { font-size: 1.1rem; font-weight: 600; }
-        .project-badge {
-            padding: 4px 12px;
+
+        .project-badge-game {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .badge-complete { background: rgba(34, 197, 94, 0.2); color: var(--accent-green); }
-        .badge-progress { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
-        .project-progress { margin-bottom: 12px; }
-        .progress-header {
+
+        .project-badge-game.complete { background: rgba(0,255,136,0.2); color: var(--neon-green); }
+        .project-badge-game.progress { background: rgba(0,240,255,0.2); color: var(--neon-blue); }
+
+        .project-progress-game {
+            margin-bottom: 15px;
+        }
+
+        .progress-header-game {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
-            margin-bottom: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
         }
-        .progress-bar {
-            height: 8px;
-            background: var(--bg-card);
-            border-radius: 4px;
+
+        .progress-bar-game {
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
             overflow: hidden;
         }
-        .progress-fill {
+
+        .progress-fill-game {
             height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-        .progress-fill.green { background: linear-gradient(90deg, #22c55e, #16a34a); }
-        .progress-fill.blue { background: linear-gradient(90deg, #3b82f6, #2563eb); }
-        .progress-fill.cyan { background: linear-gradient(90deg, #06b6d4, #0891b2); }
-        .progress-fill.orange { background: linear-gradient(90deg, #f59e0b, #d97706); }
-        .project-details {
-            font-size: 12px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-        .project-details ul { list-style: none; margin-top: 8px; }
-        .project-details li {
-            padding: 3px 0;
-            padding-left: 14px;
+            border-radius: 5px;
+            transition: width 1s ease;
             position: relative;
         }
-        .project-details li::before {
-            content: '→';
+
+        .progress-fill-game.green { background: linear-gradient(90deg, var(--neon-green), #00cc6a); }
+        .progress-fill-game.blue { background: linear-gradient(90deg, var(--neon-blue), #0088ff); }
+        .progress-fill-game.orange { background: linear-gradient(90deg, var(--neon-orange), #ff9900); }
+
+        .progress-fill-game::after {
+            content: '';
             position: absolute;
+            top: 0;
             left: 0;
-            color: var(--text-muted);
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
         }
-        .quality-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
-        .quality-card {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 18px;
-            text-align: center;
+
+        .project-details-game {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
         }
-        .quality-card .icon { font-size: 1.8rem; margin-bottom: 8px; }
-        .quality-card .value { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
-        .quality-card .label { font-size: 11px; color: var(--text-secondary); }
-        .quality-card .sublabel { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-top: 16px;
-        }
-        .team-member {
-            background: var(--bg-card);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-        }
-        .team-member .name {
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .team-member .stats {
+
+        .project-details-game li {
+            padding: 4px 0;
+            list-style: none;
             display: flex;
-            justify-content: space-around;
-            font-size: 11px;
+            align-items: center;
+            gap: 8px;
         }
-        .team-member .stat { text-align: center; }
-        .team-member .stat-value { font-weight: 700; font-size: 14px; }
-        .team-member .stat-label { color: var(--text-muted); font-size: 9px; }
+
+        .project-details-game li::before {
+            content: '▸';
+            color: var(--neon-blue);
+        }
+
+        /* KPI Bar */
+        .kpi-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(18,18,42,0.8) 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .kpi-item {
+            text-align: center;
+            padding: 15px;
+            position: relative;
+        }
+
+        .kpi-item::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .kpi-item:last-child::after {
+            display: none;
+        }
+
+        .kpi-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold) 0%, #fff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .kpi-label {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        /* Footer */
         footer {
             text-align: center;
-            padding: 24px;
-            color: var(--text-muted);
-            font-size: 12px;
-            border-top: 1px solid var(--border);
+            padding: 30px;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 40px;
         }
+
+        footer .powered {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+
+        /* Animations */
         .animate-in {
-            animation: fadeInUp 0.5s ease forwards;
+            animation: slideUp 0.6s ease forwards;
             opacity: 0;
         }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-card); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .player-card:nth-child(1) { animation-delay: 0.1s; }
+        .player-card:nth-child(2) { animation-delay: 0.2s; }
+        .player-card:nth-child(3) { animation-delay: 0.3s; }
+        .player-card:nth-child(4) { animation-delay: 0.4s; }
+        .player-card:nth-child(5) { animation-delay: 0.5s; }
+        .player-card:nth-child(6) { animation-delay: 0.6s; }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            header h1 { font-size: 1.8rem; }
-            .kpi-card .value { font-size: 1.6rem; }
-            .container { padding: 16px; }
+            .header h1 { font-size: 2rem; letter-spacing: 2px; }
+            .team-badge { width: 80px; height: 80px; font-size: 1.8rem; }
+            .player-card { height: 380px; }
+            .overall-rating { font-size: 2.5rem; }
+            .kpi-value { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
-    <div class="gradient-bar"></div>
+    <div class="bg-animation"></div>
     
     <div class="container">
-        <header>
-            <div class="label">Reporte de Productividad</div>
-            <h1>Dashboard del Equipo 2025</h1>
-            <p class="subtitle">Métricas de Entrega, Calidad y Avance de Proyectos</p>
+        <!-- Header -->
+        <header class="header">
+            <div class="team-badge">DEV</div>
+            <h1>EQUIPO FABRICA</h1>
+            <p class="subtitle">Resultados  •  Edicion 2025 </p>
         </header>
 
-        <!-- KPIs Principales -->
-        <div class="kpi-grid">
-            <div class="kpi-card green animate-in">
-                <div class="value">96</div>
-                <div class="label">Funcionalidades</div>
-                <div class="sublabel">Entregadas</div>
-            </div>
-            <div class="kpi-card indigo animate-in">
-                <div class="value">90%</div>
+        <!-- Team Rating -->
+        <div class="team-rating">
+            <div class="rating-box animate-in">
+                <div class="value">91</div>
                 <div class="label">Velocidad</div>
-                <div class="sublabel">Story Points/Sprint</div>
             </div>
-            <div class="kpi-card cyan animate-in">
-                <div class="value">5 días</div>
-                <div class="label">Lead Time</div>
-                <div class="sublabel">Solicitud → Prod</div>
+            <div class="rating-box animate-in">
+                <div class="value">96</div>
+                <div class="label">Solicitudes</div>
             </div>
-            <div class="kpi-card orange animate-in">
-                <div class="value">4/mes</div>
-                <div class="label">Despliegues</div>
-                <div class="sublabel">Frecuencia semanal</div>
+            <div class="rating-box animate-in">
+                <div class="value">73</div>
+                <div class="label">Victorias (Tareas entregadas)</div>
             </div>
-            <div class="kpi-card purple animate-in">
-                <div class="value">90%</div>
-                <div class="label">Cumplimiento</div>
-                <div class="sublabel">Sprints</div>
-            </div>
-            <div class="kpi-card blue animate-in">
+            <div class="rating-box animate-in">
                 <div class="value">95%</div>
-                <div class="label">Bugs Resueltos</div>
-                <div class="sublabel">19 de 20</div>
-            </div>
-            <div class="kpi-card red animate-in">
-                <div class="value">5h</div>
-                <div class="label">MTTR</div>
-                <div class="sublabel">Bugs críticos</div>
+                <div class="label">Tasa de Exito</div>
             </div>
         </div>
 
-        <!-- Métricas de Calidad -->
-        <div class="metrics-section">
-            <h2 class="section-title"><span>🛡️</span> Métricas de Calidad</h2>
-            <div class="quality-grid">
-                <div class="quality-card animate-in">
-                    <div class="icon">🐛</div>
-                    <div class="value" style="color: var(--accent-orange)">20</div>
-                    <div class="label">Bugs en Producción</div>
+        <!-- KPI Bar -->
+        <div class="kpi-bar animate-in">
+            <div class="kpi-item">
+                <div class="kpi-value">90%</div>
+                <div class="kpi-label">Velocidad</div>
+            </div>
+            <div class="kpi-item">
+                <div class="kpi-value">5d</div>
+                <div class="kpi-label">Lead Time</div>
+            </div>
+            <div class="kpi-item">
+                <div class="kpi-value">4/m</div>
+                <div class="kpi-label">Deploys</div>
+            </div>
+            <div class="kpi-item">
+                <div class="kpi-value">90%</div>
+                <div class="kpi-label">Sprint Win</div>
+            </div>
+            <div class="kpi-item">
+                <div class="kpi-value">5h</div>
+                <div class="kpi-label">MTTR</div>
+            </div>
+            <div class="kpi-item">
+                <div class="kpi-value">19/20</div>
+                <div class="kpi-label">Bug Fixes</div>
+            </div>
+        </div>
+
+        <!-- Player Cards Section -->
+        <h2 class="section-title"><span> - </span> ALINEACÓN </h2>
+        
+        <div class="players-grid">
+            <!-- Player 1 - Joan Sebastián (Leader) -->
+            <div class="player-card animate-in">
+                <div class="card-inner">
+                    <div class="card-front gold">
+                        <div class="card-header">
+                            <div class="card-rating">
+                                <div class="overall-rating">94</div>
+                                <div class="position">CAP</div>
+                            </div>
+                            <div class="card-avatar">
+                                <div class="avatar-circle">👨‍💻</div>
+                            </div>
+                        </div>
+                        <div class="player-name">Botas</div>
+                        <div class="player-role">Tech Lead • Full Stack</div>
+                        <div class="card-stats">
+                            <div class="stat-item high">
+                                <span class="stat-value">96</span>
+                                <span class="stat-label">DEV</span>
+                            </div>
+                            <div class="stat-item high">
+                                <span class="stat-value">92</span>
+                                <span class="stat-label">DEBUG</span>
+                            </div>
+                            <div class="stat-item high">
+                                <span class="stat-value">94</span>
+                                <span class="stat-label">ARCH</span>
+                            </div>
+                            <div class="stat-item high">
+                                <span class="stat-value">90</span>
+                                <span class="stat-label">LEAD</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="footer-stat">
+                                <div class="value">28</div>
+                                <div class="label">Tasks</div>
+                            </div>
+                            <div class="footer-stat">
+                                <div class="value">23</div>
+                                <div class="label">Done</div>
+                            </div>
+                            <div class="footer-stat">
+                                <div class="value">82%</div>
+                                <div class="label">Rate</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="quality-card animate-in">
-                    <div class="icon">✅</div>
-                    <div class="value" style="color: var(--accent-green)">19/20</div>
-                    <div class="label">Tasa Resolución</div>
+            </div>
+
+            <!-- Player 2 - Nicosgil -->
+            <div class="player-card animate-in">
+                <div class="card-inner">
+                    <div class="card-front blue">
+                        <div class="card-header">
+                            <div class="card-rating">
+                                <div class="overall-rating">91</div>
+                                <div class="position">DEV</div>
+                            </div>
+                            <div class="card-avatar">
+                                <div class="avatar-circle">🧑‍💻</div>
+                            </div>
+                        </div>
+                        <div class="player-name">Nico gil</div>
+                        <div class="player-role">Backend Developer</div>
+                        <div class="card-stats">
+                            <div class="stat-item high">
+                                <span class="stat-value">93</span>
+                                <span class="stat-label">DEV</span>
+                            </div>
+                            <div class="stat-item high">
+                                <span class="stat-value">90</span>
+                                <span class="stat-label">DEBUG</span>
+                            </div>
+                            <div class="stat-item high">
+                                <span class="stat-value">88</span>
+                                <span class="stat-label">API</span>
+                            </div>
+                            <div class="stat-item mid">
+                                <span class="stat-value">85</span>
+                                <span class="stat-label">TEAM</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="footer-stat">
+                                <div class="value">20</div>
+                                <div class="label">Tasks</div>
+                            </div>
+                            <div class="footer-stat">
+                                <div class="value">19</div>
+                                <div class="label">Done</div>
+                            </div>
+                            <div class="footer-stat">
+                                <div class="value">95%</div>
+                                <div class="label">Rate</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="quality-card animate-in">
-                    <div class="icon">🔧</div>
-                    <div class="value" style="color: var(--accent-purple)">25%</div>
-                    <div class="label">Deuda Técnica</div>
+            </div>
+
+            <!-- Player 3 - andres-c94 -->
+            <div class="player-card animate-in">
+                <div class="card-inner">
+                    <div class="card-front green">
+                        <div class="card-header">
+                            <div class="card-rating">
+                                <div class="overall-rating">89</div>
+                                <div class="position">DEV</div>
+                            </div>
+                            <div class="card-avatar">
+                                <div class="avatar-circle">👨‍🎨</div>
+                            </div>
+                        </div>
+                        <div class="player-name">andres carlos</div>
+                        <div class="player-role">Frontend Developer</div>
+                        <div class="card-stats">
+                            <div class="stat-item high">
+                                <span class="stat-value">91</span>
+                                <span class="stat-label">UI/UX</span>
+                            </div>
+                            <div class="stat-item mid">
+                                <span class="stat-value">87</span>
+                                <span class="stat-label">DEBUG</span>
+                            </div>
+                            <div class="stat-item high">
+                                <span class="stat-value">90</span>
+                                <span class="stat-label">REACT</span>
+                            </div>
+                            <div class="stat-item mid">
+                                <span class="stat-value">86</span>
+                                <span class="stat-label">TEAM</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="footer-stat">
+                                <div class="value">23</div>
+                                <div class="label">Tasks</div>
+                            </div>
+                            <div class="footer-stat">
+                                <div class="value">18</div>
+                                <div class="label">Done</div>
+                            </div>
+                            <div class="footer-stat">
+                                <div class="value">78%</div>
+                                <div class="label">Rate</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="quality-card animate-in">
-                    <div class="icon">🔄</div>
-                    <div class="value" style="color: var(--accent-red)">3</div>
-                    <div class="label">Regresiones</div>
-                    <div class="sublabel">ABACO</div>
+            </div>
+
+            <!-- Player 4 - bbohorquezs -->
+            <div class="player-card animate-in">
+                <div class="card-inner">
+                    <div class="card-front pink">
+                        <div class="card-header">
+                            <div class="card-rating">
+                                <div class="overall-rating">87</div>
+                                <div class="position">DEV</div>
+                            </div>
+                            <div class="card-avatar">
+                                <div class="avatar-circle">🧑‍🔬</div>
+                            </div>
+                        </div>
+                        <div class="player-name">brian paolo</div>
+                        <div class="player-role">Full Stack Developer</div>
+                        <div class="card-stats">
+                            <div class="stat-item mid">
+                                <span class="stat-value">86</span>
+                                <span class="stat-label">DEV</span>
+                            </div>
+                            <div class="stat-item mid">
+                                <span class="stat-value">84</span>
+                                <span class="stat-label">DEBUG</span>
+                            </div>
+                            <div class="stat-item high">
+                                <span class="stat-value">88</span>
+                                <span class="stat-label">GIS</span>
+                            </div>
+                            <div class="stat-item mid">
+                                <span class="stat-value">85</span>
+                                <span class="stat-label">TEAM</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="footer-stat">
+                                <div class="value">22</div>
+                                <div class="label">Tasks</div>
+                            </div>
+                            <div class="footer-stat">
+                                <div class="value">15</div>
+                                <div class="label">Done</div>
+                            </div>
+                            <div class="footer-stat">
+                                <div class="value">68%</div>
+                                <div class="label">Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Player 5 - Julian-Vega-B -->
+            <div class="player-card animate-in">
+                <div class="card-inner">
+                    <div class="card-front blue">
+                        <div class="card-header">
+                            <div class="card-rating">
+                                <div class="overall-rating">72</div>
+                                <div class="position">JR</div>
+                            </div>
+                            <div class="card-avatar">
+                                <div class="avatar-circle">🌱</div>
+                            </div>
+                        </div>
+                        <div class="player-name">Julian-Vega-B</div>
+                        <div class="player-role">Junior Developer</div>
+                        <div class="card-stats">
+                            <div class="stat-item low">
+                                <span class="stat-value">70</span>
+                                <span class="stat-label">DEV</span>
+                            </div>
+                            <div class="stat-item low">
+                                <span class="stat-value">68</span>
+                                <span class="stat-label">DEBUG</span>
+                            </div>
+                            <div class="stat-item mid">
+                                <span class="stat-value">75</span>
+                                <span class="stat-label">LEARN</span>
+                            </div>
+                            <div class="stat-item mid">
+                                <span class="stat-value">78</span>
+                                <span class="stat-label">TEAM</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="footer-stat">
+                                <div class="value">1</div>
+                                <div class="label">Tasks</div>
+                            </div>
+                            <div class="footer-stat">
+                                <div class="value">0</div>
+                                <div class="label">Done</div>
+                            </div>
+                            <div class="footer-stat">
+                                <div class="value">NEW</div>
+                                <div class="label">Status</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Player 6 - bgerez -->
+            <div class="player-card animate-in">
+                <div class="card-inner">
+                    <div class="card-front green">
+                        <div class="card-header">
+                            <div class="card-rating">
+                                <div class="overall-rating">78</div>
+                                <div class="position">EXT</div>
+                            </div>
+                            <div class="card-avatar">
+                                <div class="avatar-circle">🤝</div>
+                            </div>
+                        </div>
+                        <div class="player-name">bgerez</div>
+                        <div class="player-role">External Collaborator</div>
+                        <div class="card-stats">
+                            <div class="stat-item mid">
+                                <span class="stat-value">80</span>
+                                <span class="stat-label">DEV</span>
+                            </div>
+                            <div class="stat-item mid">
+                                <span class="stat-value">76</span>
+                                <span class="stat-label">DEBUG</span>
+                            </div>
+                            <div class="stat-item mid">
+                                <span class="stat-value">82</span>
+                                <span class="stat-label">SPEC</span>
+                            </div>
+                            <div class="stat-item mid">
+                                <span class="stat-value">75</span>
+                                <span class="stat-label">TEAM</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="footer-stat">
+                                <div class="value">1</div>
+                                <div class="label">Tasks</div>
+                            </div>
+                            <div class="footer-stat">
+                                <div class="value">1</div>
+                                <div class="label">Done</div>
+                            </div>
+                            <div class="footer-stat">
+                                <div class="value">100%</div>
+                                <div class="label">Rate</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Gráficas principales -->
-        <div class="metrics-section">
-            <h2 class="section-title"><span>📈</span> Rendimiento del Equipo</h2>
-            <div class="dashboard-grid">
-                <!-- Burnup Chart -->
-                <div class="card wide animate-in">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Burnup Chart - Período Completo 2024</div>
-                            <div class="card-subtitle">Tareas completadas vs abiertas (Jul 18 - Dic 12)</div>
-                        </div>
-                    </div>
-                    <div class="chart-container tall">
-                        <canvas id="burnupChart"></canvas>
-                    </div>
+        <!-- Match Stats -->
+        <h2 class="section-title"><span> - </span> Estadísticas del equipo</h2>
+        
+        <div class="match-stats">
+            <div class="stat-card animate-in">
+                <div class="stat-card-title">
+                    Rendimieto del equipo
                 </div>
-
-                <!-- Tareas por persona -->
-                <div class="card animate-in">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Estado de Tareas por Persona</div>
-                            <div class="card-subtitle">Todo / En Progreso / Done</div>
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="teamStatusChart"></canvas>
-                    </div>
+                <div class="chart-container">
+                    <canvas id="burnupChart"></canvas>
                 </div>
+            </div>
 
-                <!-- Issues por tipo -->
-                <div class="card animate-in">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Issues por Tipo</div>
-                            <div class="card-subtitle">Distribución Bug / Feature / Task</div>
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="issueTypeChart"></canvas>
-                    </div>
+            <div class="stat-card animate-in">
+                <div class="stat-card-title">
+                  Rendimiento por jugador
                 </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
 
-                <!-- Issues por repositorio -->
-                <div class="card animate-in">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Issues por Repositorio</div>
-                            <div class="card-subtitle">Distribución por proyecto</div>
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="repoChart"></canvas>
-                    </div>
+            <div class="stat-card animate-in">
+                <div class="stat-card-title">
+                    Retos 
+                </div>
+                <div class="chart-container">
+                    <canvas id="issueChart"></canvas>
+                </div>
+            </div>
+
+            <div class="stat-card animate-in">
+                <div class="stat-card-title">
+                    Mapa de Juego
+                </div>
+                <div class="chart-container">
+                    <canvas id="projectChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Distribución del equipo -->
-        <div class="metrics-section">
-            <h2 class="section-title"><span>👥</span> Distribución del Equipo</h2>
-            <div class="dashboard-grid">
-                <!-- Carga por persona -->
-                <div class="card animate-in">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Carga de Trabajo por Persona</div>
-                            <div class="card-subtitle">Total de tareas asignadas</div>
-                        </div>
+        <!-- Projects Section -->
+        <h2 class="section-title"><span>🏆</span> Resultados de Temporada </h2>
+        
+        <div class="projects-grid">
+            <div class="project-card-game complete animate-in">
+                <div class="project-header-game">
+                    <div class="project-name-game">🌐 Landing Page</div>
+                    <span class="project-badge-game complete">Produccion</span>
+                </div>
+                <div class="project-progress-game">
+                    <div class="progress-header-game">
+                        <span>Avance de la Entrega Fase 1</span>
+                        <span style="color: var(--neon-green)">100%</span>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="workloadChart"></canvas>
+                    <div class="progress-bar-game">
+                        <div class="progress-fill-game green" style="width: 100%"></div>
                     </div>
                 </div>
-
-                <!-- Contribución por proyecto -->
-                <div class="card animate-in">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Contribución por Proyecto</div>
-                            <div class="card-subtitle">Tareas por repositorio</div>
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="projectContribChart"></canvas>
-                    </div>
-                </div>
+                <ul class="project-details-game">
+                    <li>Entregado a satisfacción</li>
+                    <li>En Produccion</li>
+                    <li>Todos los objetivos de la etapa completados</li>
+                </ul>
             </div>
 
-            <!-- Resumen del equipo -->
-            <div class="team-grid">
-                <div class="team-member animate-in">
-                    <div class="name">👤 Nicosgil</div>
-                    <div class="stats">
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-orange)">0</div><div class="stat-label">TODO</div></div>
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-indigo)">1</div><div class="stat-label">PROG</div></div>
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-green)">19</div><div class="stat-label">DONE</div></div>
+            <div class="project-card-game complete animate-in">
+                <div class="project-header-game">
+                    <div class="project-name-game">⚙️ PRISMA</div>
+                    <span class="project-badge-game complete">Produccion</span>
+                </div>
+                <div class="project-progress-game">
+                    <div class="progress-header-game">
+                        <span>Entrega Fase IGAC</span>
+                        <span style="color: var(--neon-green)">100%</span>
+                    </div>
+                    <div class="progress-bar-game">
+                        <div class="progress-fill-game green" style="width: 100%"></div>
                     </div>
                 </div>
-                <div class="team-member animate-in">
-                    <div class="name">👤 andres-c94</div>
-                    <div class="stats">
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-orange)">3</div><div class="stat-label">TODO</div></div>
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-indigo)">2</div><div class="stat-label">PROG</div></div>
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-green)">18</div><div class="stat-label">DONE</div></div>
-                    </div>
-                </div>
-                <div class="team-member animate-in">
-                    <div class="name">👤 bbohorquezs</div>
-                    <div class="stats">
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-orange)">6</div><div class="stat-label">TODO</div></div>
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-indigo)">1</div><div class="stat-label">PROG</div></div>
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-green)">15</div><div class="stat-label">DONE</div></div>
-                    </div>
-                </div>
-                <div class="team-member animate-in">
-                    <div class="name">👤 Joan Sebastián</div>
-                    <div class="stats">
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-orange)">4</div><div class="stat-label">TODO</div></div>
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-indigo)">1</div><div class="stat-label">PROG</div></div>
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-green)">23</div><div class="stat-label">DONE</div></div>
-                    </div>
-                </div>
-                <div class="team-member animate-in">
-                    <div class="name">👤 Julian-Vega-B</div>
-                    <div class="stats">
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-orange)">0</div><div class="stat-label">TODO</div></div>
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-indigo)">1</div><div class="stat-label">PROG</div></div>
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-green)">0</div><div class="stat-label">DONE</div></div>
-                    </div>
-                </div>
-                <div class="team-member animate-in">
-                    <div class="name">👤 bgerez</div>
-                    <div class="stats">
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-orange)">0</div><div class="stat-label">TODO</div></div>
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-indigo)">0</div><div class="stat-label">PROG</div></div>
-                        <div class="stat"><div class="stat-value" style="color: var(--accent-green)">1</div><div class="stat-label">DONE</div></div>
-                    </div>
-                </div>
+                <ul class="project-details-game">
+                    <li>Entrega Confirmada por el cliente</li>
+                    <li>En integracion con Sentienl Hub</li>
+                    <li>A la espera de Fase SECTOR CROPORATIVO </li>
+                </ul>
             </div>
-        </div>
 
-        <!-- Avance de Proyectos -->
-        <div class="metrics-section">
-            <h2 class="section-title"><span>📊</span> Avance de Proyectos</h2>
-            <div class="projects-grid">
-                <div class="project-card landing animate-in">
-                    <div class="project-header">
-                        <div class="project-name">🌐 Landing Page</div>
-                        <span class="project-badge badge-complete">COMPLETADO</span>
+            <div class="project-card-game progress animate-in">
+                <div class="project-header-game">
+                    <div class="project-name-game">🗺️ Mapas CO</div>
+                    <span class="project-badge-game progress">desarrollo</span>
+                </div>
+                <div class="project-progress-game">
+                    <div class="progress-header-game">
+                        <span>Etapa 2</span>
+                        <span style="color: var(--neon-blue)">100%</span>
                     </div>
-                    <div class="project-progress">
-                        <div class="progress-header">
-                            <span>Progreso</span>
-                            <span style="color: var(--accent-green); font-weight: 600;">100%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill green" style="width: 100%;"></div>
-                        </div>
-                    </div>
-                    <div class="project-details">
-                        <ul>
-                            <li>Entregado a satisfacción</li>
-                            <li>En producción</li>
-                            <li>Tareas 100% completadas</li>
-                        </ul>
+                    <div class="progress-bar-game">
+                        <div class="progress-fill-game blue" style="width: 100%"></div>
                     </div>
                 </div>
-
-                <div class="project-card mapasco animate-in">
-                    <div class="project-header">
-                        <div class="project-name">🗺️ Mapas CO</div>
-                        <span class="project-badge badge-progress">FASE 2 → 3</span>
+                <div class="project-progress-game">
+                    <div class="progress-header-game">
+                        <span>Etapa 3</span>
+                        <span style="color: var(--neon-orange)">20%</span>
                     </div>
-                    <div class="project-progress">
-                        <div class="progress-header">
-                            <span>Fase 2</span>
-                            <span style="color: var(--accent-cyan); font-weight: 600;">100%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill cyan" style="width: 100%;"></div>
-                        </div>
-                    </div>
-                    <div class="project-progress">
-                        <div class="progress-header">
-                            <span>Fase 3</span>
-                            <span style="color: var(--accent-orange); font-weight: 600;">20%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill orange" style="width: 20%;"></div>
-                        </div>
-                    </div>
-                    <div class="project-details">
-                        <ul>
-                            <li>Entrega: <strong>18 Diciembre</strong></li>
-                            <li>Pendiente testing</li>
-                        </ul>
+                    <div class="progress-bar-game">
+                        <div class="progress-fill-game orange" style="width: 20%"></div>
                     </div>
                 </div>
-
-                <div class="project-card abaco animate-in">
-                    <div class="project-header">
-                        <div class="project-name">🌳 ABACO</div>
-                        <span class="project-badge badge-progress">EN PROGRESO</span>
-                    </div>
-                    <div class="project-progress">
-                        <div class="progress-header">
-                            <span>Versión Deforestación</span>
-                            <span style="color: var(--accent-blue); font-weight: 600;">90%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill blue" style="width: 90%;"></div>
-                        </div>
-                    </div>
-                    <div class="project-details">
-                        <ul>
-                            <li>Issues #35, #36, #37</li>
-                            <li>100% Issues resueltos</li>
-                            <li>3 regresiones</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="project-card prisma animate-in">
-                    <div class="project-header">
-                        <div class="project-name">⚙️ PRISMA</div>
-                        <span class="project-badge badge-complete">ENTREGADO</span>
-                    </div>
-                    <div class="project-progress">
-                        <div class="progress-header">
-                            <span>Entrega Principal</span>
-                            <span style="color: var(--accent-green); font-weight: 600;">100%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill green" style="width: 100%;"></div>
-                        </div>
-                    </div>
-                    <div class="project-details">
-                        <ul>
-                            <li>Entregado a satisfacción</li>
-                            <li>Integrando Sentinel Hub</li>
-                        </ul>
-                    </div>
-                </div>
+                <ul class="project-details-game">
+                    <li>Proxima Entrega: Dec 18</li>
+                    <li>Estrategia de testing en curso</li>
+                </ul>
             </div>
-        </div>
 
-        <!-- Gráficas adicionales -->
-        <div class="metrics-section">
-            <h2 class="section-title"><span>🎯</span> Indicadores de Productividad</h2>
-            <div class="dashboard-grid">
-                <div class="card animate-in">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Avance por Proyecto</div>
-                            <div class="card-subtitle">Porcentaje de completado</div>
-                        </div>
+            <div class="project-card-game progress animate-in">
+                <div class="project-header-game">
+                    <div class="project-name-game">🌳 ABACO</div>
+                    <span class="project-badge-game progress">desarrollo v2</span>
+                </div>
+                <div class="project-progress-game">
+                    <div class="progress-header-game">
+                        <span>Versión de Deforestación </span>
+                        <span style="color: var(--neon-blue)">90%</span>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="projectProgressChart"></canvas>
+                    <div class="progress-bar-game">
+                        <div class="progress-fill-game blue" style="width: 90%"></div>
                     </div>
                 </div>
-
-                <div class="card animate-in">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Radar de Productividad</div>
-                            <div class="card-subtitle">Actual vs Objetivo</div>
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="radarChart"></canvas>
-                    </div>
-                </div>
+                <ul class="project-details-game">
+                    <li>Issues #35, #36, #37</li>
+                    <li>85% de issues resueltas</li>
+                    <li>3 BUGS en curso</li>
+                </ul>
             </div>
         </div>
     </div>
 
     <footer>
-        <p>Dashboard del Equipo de Desarrollo · Reporte 2025 · Datos actualizados al 12 de Diciembre</p>
+        <p class="powered">⚡ DESARROLLADO POR EL EQUIPO DE FABRICA ⚡</p>
+        <p style="margin-top: 10px">Sincronizado en tiempo real con github</p>
     </footer>
 
     <script>
         const colors = {
-            blue: '#3b82f6',
-            green: '#22c55e',
-            orange: '#f59e0b',
+            gold: '#ffd700',
+            neonBlue: '#00f0ff',
+            neonGreen: '#00ff88',
+            neonPink: '#ff00ff',
+            neonOrange: '#ff6600',
             purple: '#8b5cf6',
-            indigo: '#6366f1',
-            cyan: '#06b6d4',
-            red: '#ef4444',
-            pink: '#ec4899',
             gray: '#64748b'
         };
 
-        Chart.defaults.color = '#94a3b8';
-        Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+        Chart.defaults.color = 'rgba(255,255,255,0.7)';
+        Chart.defaults.font.family = "'Rajdhani', sans-serif";
+        Chart.defaults.font.weight = '600';
 
-        // Burnup Chart - Período completo Jul-Dic
+        // Burnup Chart
         new Chart(document.getElementById('burnupChart'), {
             type: 'line',
             data: {
                 labels: ['Jul 18', 'Jul 22', 'Jul 29', 'Aug 5', 'Aug 12', 'Aug 19', 'Aug 26', 'Sep 3', 'Sep 10', 'Sep 18', 'Sep 26', 'Oct 1', 'Oct 14', 'Oct 28', 'Nov 11', 'Nov 18', 'Nov 27', 'Dec 3', 'Dec 9', 'Dec 12'],
                 datasets: [
                     {
-                        label: 'Completadas',
+                        label: 'Wins (Completed)',
                         data: [0, 4, 8, 11, 15, 23, 23, 25, 27, 34, 44, 45, 46, 51, 51, 57, 64, 67, 71, 73],
-                        borderColor: colors.green,
-                        backgroundColor: colors.green + '20',
+                        borderColor: colors.neonGreen,
+                        backgroundColor: colors.neonGreen + '20',
                         fill: true,
-                        tension: 0.3,
-                        pointRadius: 4,
-                        pointBackgroundColor: colors.green,
-                        borderWidth: 2
-                    },
-                    {
-                        label: 'Abiertas',
-                        data: [12, 16, 16, 16, 18, 13, 14, 18, 19, 17, 14, 19, 18, 18, 18, 14, 20, 19, 18, 19],
-                        borderColor: colors.purple,
-                        backgroundColor: colors.purple + '20',
-                        fill: true,
-                        tension: 0.3,
-                        pointRadius: 4,
-                        pointBackgroundColor: colors.purple,
-                        borderWidth: 2
-                    },
-                    {
-                        label: 'No Planificadas',
-                        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 4, 4, 4, 4, 4],
-                        borderColor: colors.gray,
-                        backgroundColor: colors.gray + '15',
-                        fill: true,
-                        tension: 0.3,
+                        tension: 0.4,
                         pointRadius: 3,
-                        pointBackgroundColor: colors.gray,
-                        borderWidth: 1,
-                        borderDash: [5, 5]
+                        pointBackgroundColor: colors.neonGreen,
+                        borderWidth: 3
+                    },
+                    {
+                        label: 'Open Matches',
+                        data: [12, 16, 16, 16, 18, 13, 14, 18, 19, 17, 14, 19, 18, 18, 18, 14, 20, 19, 18, 19],
+                        borderColor: colors.neonPink,
+                        backgroundColor: colors.neonPink + '15',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointBackgroundColor: colors.neonPink,
+                        borderWidth: 2
                     }
                 ]
             },
@@ -727,233 +1221,105 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } },
-                    tooltip: { backgroundColor: '#1e293b', padding: 12, cornerRadius: 8, mode: 'index', intersect: false }
+                    legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true, font: { size: 11 } } }
                 },
                 scales: {
-                    x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 45 } },
-                    y: { grid: { color: '#334155' }, beginAtZero: true, max: 80 }
-                },
-                interaction: { mode: 'nearest', axis: 'x', intersect: false }
+                    x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { maxRotation: 45 } },
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+                }
             }
         });
 
-        // Team Status Chart
-        new Chart(document.getElementById('teamStatusChart'), {
+        // Performance Chart (Stacked Bar)
+        new Chart(document.getElementById('performanceChart'), {
             type: 'bar',
             data: {
-                labels: ['Joan Sebastián', 'Nicosgil', 'andres-c94', 'bbohorquezs', 'Julian-Vega', 'bgerez'],
+                labels: ['Joan S.', 'Nicosgil', 'andres-c94', 'bbohorquezs', 'Julian-V', 'bgerez'],
                 datasets: [
-                    { label: 'Done', data: [23, 19, 18, 15, 0, 1], backgroundColor: colors.green, borderRadius: 4 },
-                    { label: 'In Progress', data: [1, 1, 2, 1, 1, 0], backgroundColor: colors.indigo, borderRadius: 4 },
-                    { label: 'Todo', data: [4, 0, 3, 6, 0, 0], backgroundColor: colors.orange, borderRadius: 4 }
+                    { label: 'Victories', data: [23, 19, 18, 15, 0, 1], backgroundColor: colors.neonGreen, borderRadius: 4 },
+                    { label: 'In Progress', data: [1, 1, 2, 1, 1, 0], backgroundColor: colors.neonBlue, borderRadius: 4 },
+                    { label: 'Pending', data: [4, 0, 3, 6, 0, 0], backgroundColor: colors.neonOrange, borderRadius: 4 }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } },
-                    tooltip: { backgroundColor: '#1e293b', padding: 12, cornerRadius: 8 }
+                    legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true } }
                 },
                 scales: {
                     x: { grid: { display: false }, stacked: true },
-                    y: { grid: { color: '#334155' }, stacked: true }
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, stacked: true }
                 }
             }
         });
 
-        // Issue Type Chart (Doughnut)
-        new Chart(document.getElementById('issueTypeChart'), {
+        // Issue Types Chart (Doughnut)
+        new Chart(document.getElementById('issueChart'), {
             type: 'doughnut',
             data: {
-                labels: ['Features', 'Bugs', 'Tasks', 'Sin Tipo'],
+                labels: ['Features', 'Bugs', 'Tasks', 'Untyped'],
                 datasets: [{
                     data: [46, 23, 18, 9],
-                    backgroundColor: [colors.green, colors.red, colors.blue, colors.gray],
+                    backgroundColor: [colors.neonGreen, colors.neonPink, colors.neonBlue, colors.gray],
                     borderWidth: 0,
-                    hoverOffset: 8
+                    hoverOffset: 10
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '60%',
+                cutout: '65%',
                 plugins: {
-                    legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } },
-                    tooltip: {
-                        backgroundColor: '#1e293b',
-                        padding: 12,
-                        cornerRadius: 8,
-                        callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw} issues` }
-                    }
+                    legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true } }
                 }
             }
         });
 
-        // Repository Chart
-        new Chart(document.getElementById('repoChart'), {
-            type: 'bar',
+        // Project Arena Chart (Polar Area)
+        new Chart(document.getElementById('projectChart'), {
+            type: 'polarArea',
             data: {
-                labels: ['abaco-web', 'abaco-api', 'prisma-api', 'mapasco-web', 'mapasco-api', 'Landing-web', 'prisma-desktop'],
+                labels: ['ABACO', 'PRISMA', 'Mapas CO', 'Landing'],
                 datasets: [{
-                    label: 'Issues',
-                    data: [20, 29, 12, 9, 8, 7, 3],
-                    backgroundColor: [colors.blue, colors.blue, colors.orange, colors.cyan, colors.cyan, colors.green, colors.orange],
-                    borderRadius: 6
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { backgroundColor: '#1e293b', padding: 12, cornerRadius: 8 }
-                },
-                scales: {
-                    x: { grid: { color: '#334155' } },
-                    y: { grid: { display: false } }
-                }
-            }
-        });
-
-        // Workload Chart
-        new Chart(document.getElementById('workloadChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Joan Sebastián', 'bbohorquezs', 'andres-c94', 'Nicosgil', 'Julian-Vega', 'bgerez'],
-                datasets: [{
-                    label: 'Total Tareas',
-                    data: [28, 22, 23, 20, 1, 1],
-                    backgroundColor: [colors.indigo, colors.purple, colors.cyan, colors.green, colors.orange, colors.gray],
-                    borderRadius: 6
+                    data: [49, 18, 17, 8],
+                    backgroundColor: [
+                        colors.neonBlue + '80',
+                        colors.neonOrange + '80',
+                        colors.neonGreen + '80',
+                        colors.neonPink + '80'
+                    ],
+                    borderColor: [colors.neonBlue, colors.neonOrange, colors.neonGreen, colors.neonPink],
+                    borderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
-                    tooltip: { backgroundColor: '#1e293b', padding: 12, cornerRadius: 8 }
-                },
-                scales: {
-                    x: { grid: { display: false } },
-                    y: { grid: { color: '#334155' }, beginAtZero: true }
-                }
-            }
-        });
-
-        // Project Contribution Chart
-        new Chart(document.getElementById('projectContribChart'), {
-            type: 'doughnut',
-            data: {
-                labels: ['ABACO', 'PRISMA', 'Mapas CO', 'Landing Page', 'Otros'],
-                datasets: [{
-                    data: [49, 18, 17, 8, 4],
-                    backgroundColor: [colors.blue, colors.orange, colors.cyan, colors.green, colors.purple],
-                    borderWidth: 0,
-                    hoverOffset: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '55%',
-                plugins: {
-                    legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true } },
-                    tooltip: {
-                        backgroundColor: '#1e293b',
-                        padding: 12,
-                        cornerRadius: 8,
-                        callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw} tareas` }
-                    }
-                }
-            }
-        });
-
-        // Project Progress Chart
-        new Chart(document.getElementById('projectProgressChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Landing Page', 'PRISMA', 'Mapas CO (F2)', 'ABACO', 'Mapas CO (F3)'],
-                datasets: [{
-                    label: 'Progreso',
-                    data: [100, 100, 100, 90, 20],
-                    backgroundColor: [colors.green, colors.green, colors.cyan, colors.blue, colors.orange],
-                    borderRadius: 6
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: '#1e293b',
-                        padding: 12,
-                        cornerRadius: 8,
-                        callbacks: { label: (ctx) => `${ctx.raw}% completado` }
-                    }
-                },
-                scales: {
-                    x: { max: 100, grid: { color: '#334155' }, ticks: { callback: (v) => v + '%' } },
-                    y: { grid: { display: false } }
-                }
-            }
-        });
-
-        // Radar Chart
-        new Chart(document.getElementById('radarChart'), {
-            type: 'radar',
-            data: {
-                labels: ['Velocidad', 'Cumplimiento', 'Calidad', 'Lead Time', 'Despliegues'],
-                datasets: [
-                    {
-                        label: 'Actual',
-                        data: [90, 90, 95, 85, 80],
-                        backgroundColor: colors.green + '30',
-                        borderColor: colors.green,
-                        borderWidth: 2,
-                        pointBackgroundColor: colors.green,
-                        pointRadius: 4
-                    },
-                    {
-                        label: 'Objetivo',
-                        data: [85, 85, 90, 80, 75],
-                        backgroundColor: colors.indigo + '20',
-                        borderColor: colors.indigo,
-                        borderWidth: 2,
-                        borderDash: [5, 5],
-                        pointBackgroundColor: colors.indigo,
-                        pointRadius: 4
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } },
-                    tooltip: { backgroundColor: '#1e293b', padding: 12, cornerRadius: 8 }
+                    legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true } }
                 },
                 scales: {
                     r: {
-                        beginAtZero: true,
-                        max: 100,
-                        ticks: { stepSize: 20, backdropColor: 'transparent' },
-                        grid: { color: '#334155' },
-                        angleLines: { color: '#334155' },
-                        pointLabels: { font: { size: 11 } }
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { display: false }
                     }
                 }
             }
         });
 
-        // Animation
-        document.querySelectorAll('.animate-in').forEach((el, i) => {
-            el.style.animationDelay = `${i * 0.05}s`;
+        // Animate cards on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-in').forEach(el => {
+            el.style.animationPlayState = 'paused';
+            observer.observe(el);
         });
     </script>
 </body>
