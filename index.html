@@ -388,14 +388,14 @@
             <h2 class="section-title"><span>📈</span> Rendimiento del Equipo</h2>
             <div class="dashboard-grid">
                 <!-- Burnup Chart -->
-                <div class="card animate-in">
+                <div class="card wide animate-in">
                     <div class="card-header">
                         <div>
-                            <div class="card-title">Burnup Chart - Sprint Actual</div>
-                            <div class="card-subtitle">Tareas completadas vs abiertas (Nov 28 - Dic 12)</div>
+                            <div class="card-title">Burnup Chart - Período Completo 2024</div>
+                            <div class="card-subtitle">Tareas completadas vs abiertas (Jul 18 - Dic 12)</div>
                         </div>
                     </div>
-                    <div class="chart-container">
+                    <div class="chart-container tall">
                         <canvas id="burnupChart"></canvas>
                     </div>
                 </div>
@@ -681,31 +681,45 @@
         Chart.defaults.color = '#94a3b8';
         Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
 
-        // Burnup Chart
+        // Burnup Chart - Período completo Jul-Dic
         new Chart(document.getElementById('burnupChart'), {
             type: 'line',
             data: {
-                labels: ['Nov 28', 'Nov 29', 'Nov 30', 'Dec 1', 'Dec 2', 'Dec 3', 'Dec 4', 'Dec 5', 'Dec 6', 'Dec 7', 'Dec 8', 'Dec 9', 'Dec 10', 'Dec 11', 'Dec 12'],
+                labels: ['Jul 18', 'Jul 22', 'Jul 29', 'Aug 5', 'Aug 12', 'Aug 19', 'Aug 26', 'Sep 3', 'Sep 10', 'Sep 18', 'Sep 26', 'Oct 1', 'Oct 14', 'Oct 28', 'Nov 11', 'Nov 18', 'Nov 27', 'Dec 3', 'Dec 9', 'Dec 12'],
                 datasets: [
                     {
                         label: 'Completadas',
-                        data: [0, 0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 7, 7, 9, 9],
+                        data: [0, 4, 8, 11, 15, 23, 23, 25, 27, 34, 44, 45, 46, 51, 51, 57, 64, 67, 71, 73],
                         borderColor: colors.green,
                         backgroundColor: colors.green + '20',
                         fill: true,
                         tension: 0.3,
                         pointRadius: 4,
-                        pointBackgroundColor: colors.green
+                        pointBackgroundColor: colors.green,
+                        borderWidth: 2
                     },
                     {
                         label: 'Abiertas',
-                        data: [20, 20, 20, 21, 20, 19, 19, 19, 19, 19, 19, 18, 18, 19, 19],
+                        data: [12, 16, 16, 16, 18, 13, 14, 18, 19, 17, 14, 19, 18, 18, 18, 14, 20, 19, 18, 19],
                         borderColor: colors.purple,
                         backgroundColor: colors.purple + '20',
                         fill: true,
                         tension: 0.3,
                         pointRadius: 4,
-                        pointBackgroundColor: colors.purple
+                        pointBackgroundColor: colors.purple,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'No Planificadas',
+                        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 4, 4, 4, 4, 4],
+                        borderColor: colors.gray,
+                        backgroundColor: colors.gray + '15',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 3,
+                        pointBackgroundColor: colors.gray,
+                        borderWidth: 1,
+                        borderDash: [5, 5]
                     }
                 ]
             },
@@ -714,12 +728,13 @@
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } },
-                    tooltip: { backgroundColor: '#1e293b', padding: 12, cornerRadius: 8 }
+                    tooltip: { backgroundColor: '#1e293b', padding: 12, cornerRadius: 8, mode: 'index', intersect: false }
                 },
                 scales: {
                     x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 45 } },
-                    y: { grid: { color: '#334155' }, beginAtZero: true }
-                }
+                    y: { grid: { color: '#334155' }, beginAtZero: true, max: 80 }
+                },
+                interaction: { mode: 'nearest', axis: 'x', intersect: false }
             }
         });
 
