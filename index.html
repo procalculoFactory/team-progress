@@ -1657,12 +1657,12 @@
             const percentage = Math.round((bugScore / BUG_CONFIG.SPRINT_BUGS) * 100);
             let emoji, mensaje;
             
-            if (percentage >= 100) {
+            if (percentage >= 500) {
                 emoji = '🏆';
                 mensaje = '¡LEGENDARIO! Superaste la productividad del equipo.';
-            } else if (percentage >= 80) {
+            } else if (percentage >= 350) {
                 emoji = '⭐';
-                mensaje = '¡Excelente! Eres un verdadero Bug Hunter.';
+                mensaje = '¡Excelente! Eres un verdadero Cazador de Bugs.';
             } else if (percentage >= 50) {
                 emoji = '💪';
                 mensaje = '¡Buen trabajo! Tienes buenos reflejos de debugging.';
@@ -1674,8 +1674,8 @@
             bugResultText.textContent = `${emoji} Cazaste ${bugScore} bugs en 30 segundos. ${mensaje}`;
             bugComparison.innerHTML = `
                 <strong>📊 Comparación con el Sprint:</strong><br>
-                El equipo resolvió <strong>${BUG_CONFIG.SPRINT_BUGS} bugs</strong> este sprint (19/20).<br>
-                Tu cacería representa el <strong>${percentage}%</strong> de esa productividad. ¡El equipo va por buen camino!
+                El equipo de Fabrica resolvió <strong>${BUG_CONFIG.SPRINT_BUGS} bugs</strong> este sprint (19/20).<br>
+                Tu cacería representa el <strong>${percentage}%</strong> de esa productividad. ¡El botas te manda saludos!
             `;
             
             bugMessageEl.style.display = 'block';
