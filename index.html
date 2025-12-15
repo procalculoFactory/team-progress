@@ -61,7 +61,7 @@
         }
 
         .container {
-            max-width: 1500px;Ultimate Dev Squad
+            max-width: 1500px;
             margin: 0 auto;
             padding: 20px;
             position: relative;
@@ -614,6 +614,198 @@
             margin-top: 5px;
         }
 
+        /* ============================================
+           BUG HUNTER GAME STYLES
+           ============================================ */
+        .bug-hunter-section {
+            margin: 40px 0;
+        }
+
+        .bug-hunter-container {
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(18,18,42,0.9) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255,0,255,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bug-hunter-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-green));
+        }
+
+        .bug-game-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .bug-game-header h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--neon-pink) 0%, var(--neon-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .bug-game-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
+
+        .bug-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .bug-stat-box {
+            background: rgba(255,255,255,0.05);
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .bug-stat-box span {
+            display: block;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .bug-stat-box strong {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+        }
+
+        .bug-stat-box.timer strong {
+            color: var(--neon-pink);
+            text-shadow: 0 0 20px rgba(255,0,255,0.5);
+        }
+
+        .bug-stat-box.score strong {
+            color: var(--neon-green);
+            text-shadow: 0 0 20px rgba(0,255,136,0.5);
+        }
+
+        .bug-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto 25px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .bug-cell {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .bug-cell:hover {
+            transform: scale(1.08);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .bug-cell.has-bug:hover {
+            background: rgba(255,0,255,0.3);
+            box-shadow: 0 0 20px rgba(255,0,255,0.4);
+            border-color: var(--neon-pink);
+        }
+
+        .bug-cell.caught {
+            animation: bugSquash 0.3s ease forwards;
+        }
+
+        @keyframes bugSquash {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); background: var(--neon-green); box-shadow: 0 0 30px var(--neon-green); }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        .bug-message {
+            text-align: center;
+            padding: 25px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            display: none;
+            margin-top: 20px;
+        }
+
+        .bug-message h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--neon-green);
+            margin-bottom: 15px;
+        }
+
+        .bug-message p {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .bug-comparison {
+            background: linear-gradient(135deg, rgba(0,255,136,0.1) 0%, rgba(0,240,255,0.1) 100%);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(0,255,136,0.3);
+        }
+
+        .bug-comparison strong {
+            color: var(--gold);
+        }
+
+        .bug-btn {
+            font-family: 'Orbitron', sans-serif;
+            padding: 15px 40px;
+            font-size: 1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--neon-pink) 0%, var(--neon-blue) 100%);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .bug-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255,0,255,0.4);
+        }
+
+        .bug-btn.hidden {
+            display: none;
+        }
+
         /* Footer */
         footer {
             text-align: center;
@@ -655,6 +847,11 @@
             .player-card { height: 380px; }
             .overall-rating { font-size: 2.5rem; }
             .kpi-value { font-size: 1.5rem; }
+            .bug-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 15px; }
+            .bug-cell { font-size: 1.5rem; }
+            .bug-stats { gap: 15px; }
+            .bug-stat-box { padding: 10px 20px; }
+            .bug-stat-box strong { font-size: 2rem; }
         }
     </style>
 </head>
@@ -1070,7 +1267,7 @@
         </div>
 
         <!-- Projects Section -->
-        <h2 class="section-title"><span>🏆</span> Resultados de Temporada </h2>
+        <h2 class="section-title">Resultados de Temporada </h2>
         
         <div class="projects-grid">
             <div class="project-card-game complete animate-in">
@@ -1149,20 +1346,69 @@
                     <div class="project-name-game">🌳 ABACO</div>
                     <span class="project-badge-game progress">desarrollo v2</span>
                 </div>
-                <div class="project-progress-game">
+                 <div class="project-progress-game">
                     <div class="progress-header-game">
-                        <span>Versión de Deforestación </span>
-                        <span style="color: var(--neon-blue)">90%</span>
+                        <span>Etapa 1 - MVP Backend</span>
+                        <span style="color: var(--neon-blue)">100%</span>
                     </div>
                     <div class="progress-bar-game">
-                        <div class="progress-fill-game blue" style="width: 90%"></div>
+                        <div class="progress-fill-game blue" style="width: 100%"></div>
+                    </div>
+                <!-- </div> -->
+                <div class="progress-header-game">
+                        <span>Etapa 2 - Version Deforestación</span>
+                        <span style="color: var(--neon-blue)">100%</span>
+                    </div>
+                    <div class="progress-bar-game">
+                        <div class="progress-fill-game blue" style="width: 100%"></div>
                     </div>
                 </div>
+ 
+                    <div class="progress-header-game">
+                        <span>Etapa 3 - Version Multi Proyecto</span>
+                        <span style="color: var(--neon-orange)">20%</span>
+                    </div>
+                    <div class="progress-bar-game">
+                        <div class="progress-fill-game orange" style="width: 20%"></div>
+                    </div>
                 <ul class="project-details-game">
                     <li>Issues #35, #36, #37</li>
                     <li>85% de issues resueltas</li>
                     <li>3 BUGS en curso</li>
                 </ul>
+            <!-- </div> -->
+        </div>
+
+        <!-- Bug Hunter Game Section -->
+        <h2 class="section-title"> Mini Juego: Caza de Bugs</h2>
+        
+        <div class="bug-hunter-section">
+            <div class="bug-hunter-container animate-in">
+                <div class="bug-game-header">
+                    <h3>🎮 El reto de Fabrica</h3>
+                    <p>¡Demuestra tus habilidades de debugging! Caza todos los bugs antes de que tu cliente interno te reporte.</p>
+                </div>
+
+                <div class="bug-stats">
+                    <div class="bug-stat-box timer">
+                        <span>Tiempo</span>
+                        <strong id="bugTimer">30</strong>
+                    </div>
+                    <div class="bug-stat-box score">
+                        <span>Bugs Cazados</span>
+                        <strong id="bugScore">0</strong>
+                    </div>
+                </div>
+
+                <div class="bug-grid" id="bugGrid"></div>
+
+                <div class="bug-message" id="bugMessage">
+                    <h4>🎉 ¡Tiempo!</h4>
+                    <p id="bugResultText"></p>
+                    <div class="bug-comparison" id="bugComparison"></div>
+                </div>
+
+                <button class="bug-btn" id="bugStartBtn">▶ INICIAR CACERÍA</button>
             </div>
         </div>
     </div>
@@ -1173,6 +1419,9 @@
     </footer>
 
     <script>
+        // ============================================
+        // CHARTS
+        // ============================================
         const colors = {
             gold: '#ffd700',
             neonBlue: '#00f0ff',
@@ -1308,7 +1557,138 @@
             }
         });
 
-        // Animate cards on scroll
+        // ============================================
+        // BUG HUNTER GAME
+        // ============================================
+        const BUG_CONFIG = {
+            GRID_SIZE: 25,
+            GAME_DURATION: 30,
+            SPRINT_BUGS: 19, // Métrica real: 19/20 bugs resueltos en el sprint
+            BUG_ICONS: ['🐛', '🐜', '🦗', '🪲', '🦟', '🕷️']
+        };
+
+        let bugScore = 0;
+        let bugTimeLeft = BUG_CONFIG.GAME_DURATION;
+        let bugGameActive = false;
+        let bugTimerInterval;
+        let bugSpawnInterval;
+
+        const bugGrid = document.getElementById('bugGrid');
+        const bugTimerEl = document.getElementById('bugTimer');
+        const bugScoreEl = document.getElementById('bugScore');
+        const bugMessageEl = document.getElementById('bugMessage');
+        const bugResultText = document.getElementById('bugResultText');
+        const bugComparison = document.getElementById('bugComparison');
+        const bugStartBtn = document.getElementById('bugStartBtn');
+
+        function createBugGrid() {
+            bugGrid.innerHTML = '';
+            for (let i = 0; i < BUG_CONFIG.GRID_SIZE; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'bug-cell';
+                cell.dataset.index = i;
+                bugGrid.appendChild(cell);
+            }
+        }
+
+        function spawnBugs() {
+            const cells = document.querySelectorAll('.bug-cell');
+            const bugCount = Math.floor(Math.random() * 4) + 3; // 3-6 bugs
+            const availableCells = [...cells].filter(c => !c.classList.contains('has-bug') && !c.classList.contains('caught'));
+            
+            for (let i = 0; i < Math.min(bugCount, availableCells.length); i++) {
+                const randomIndex = Math.floor(Math.random() * availableCells.length);
+                const cell = availableCells.splice(randomIndex, 1)[0];
+                const bugIcon = BUG_CONFIG.BUG_ICONS[Math.floor(Math.random() * BUG_CONFIG.BUG_ICONS.length)];
+                cell.textContent = bugIcon;
+                cell.classList.add('has-bug');
+            }
+        }
+
+        function handleBugClick(e) {
+            if (!bugGameActive) return;
+            const cell = e.target;
+            if (cell.classList.contains('has-bug') && !cell.classList.contains('caught')) {
+                cell.classList.add('caught');
+                cell.classList.remove('has-bug');
+                bugScore++;
+                bugScoreEl.textContent = bugScore;
+                
+                setTimeout(() => {
+                    cell.textContent = '';
+                    cell.classList.remove('caught');
+                }, 300);
+            }
+        }
+
+        function startBugGame() {
+            bugScore = 0;
+            bugTimeLeft = BUG_CONFIG.GAME_DURATION;
+            bugGameActive = true;
+            
+            bugScoreEl.textContent = '0';
+            bugTimerEl.textContent = bugTimeLeft;
+            bugMessageEl.style.display = 'none';
+            bugStartBtn.classList.add('hidden');
+            
+            createBugGrid();
+            bugGrid.addEventListener('click', handleBugClick);
+            
+            spawnBugs();
+            bugSpawnInterval = setInterval(() => {
+                if (bugGameActive) spawnBugs();
+            }, 2000);
+            
+            bugTimerInterval = setInterval(() => {
+                bugTimeLeft--;
+                bugTimerEl.textContent = bugTimeLeft;
+                
+                if (bugTimeLeft <= 0) {
+                    endBugGame();
+                }
+            }, 1000);
+        }
+
+        function endBugGame() {
+            bugGameActive = false;
+            clearInterval(bugTimerInterval);
+            clearInterval(bugSpawnInterval);
+            
+            const percentage = Math.round((bugScore / BUG_CONFIG.SPRINT_BUGS) * 100);
+            let emoji, mensaje;
+            
+            if (percentage >= 100) {
+                emoji = '🏆';
+                mensaje = '¡LEGENDARIO! Superaste la productividad del equipo.';
+            } else if (percentage >= 80) {
+                emoji = '⭐';
+                mensaje = '¡Excelente! Eres un verdadero Bug Hunter.';
+            } else if (percentage >= 50) {
+                emoji = '💪';
+                mensaje = '¡Buen trabajo! Tienes buenos reflejos de debugging.';
+            } else {
+                emoji = '🎯';
+                mensaje = '¡Sigue practicando! Cada bug cuenta.';
+            }
+            
+            bugResultText.textContent = `${emoji} Cazaste ${bugScore} bugs en 30 segundos. ${mensaje}`;
+            bugComparison.innerHTML = `
+                <strong>📊 Comparación con el Sprint:</strong><br>
+                El equipo resolvió <strong>${BUG_CONFIG.SPRINT_BUGS} bugs</strong> este sprint (19/20).<br>
+                Tu cacería representa el <strong>${percentage}%</strong> de esa productividad. ¡El equipo va por buen camino!
+            `;
+            
+            bugMessageEl.style.display = 'block';
+            bugStartBtn.textContent = '🔄 JUGAR DE NUEVO';
+            bugStartBtn.classList.remove('hidden');
+        }
+
+        bugStartBtn.addEventListener('click', startBugGame);
+        createBugGrid();
+
+        // ============================================
+        // SCROLL ANIMATIONS
+        // ============================================
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
